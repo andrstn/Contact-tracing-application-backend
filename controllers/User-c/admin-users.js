@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 const usersAdminRouter = require('express').Router()
-const AdminUser = require('../models/Users/admin-user')
+const AdminUser = require('../../models/Users/admin-user')
 
 usersAdminRouter.get('/', async (request, response) => {
     // const users = await User.find({})

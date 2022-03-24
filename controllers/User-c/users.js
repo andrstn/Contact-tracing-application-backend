@@ -1,18 +1,18 @@
 const bcrypt = require('bcrypt')
-const usersEstablishmentRouter = require('express').Router()
-const EstablishmentUser = require('../models/Users/establishment-user')
+const usersRouter = require('express').Router()
+const User = require('../../models/Users/user')
 
-usersEstablishmentRouter.get('/', async (request, response) => {
+usersRouter.get('/', async (request, response) => {
     // const users = await User.find({})
     const users = await User
-    .find({}).populate('notes',{ content: 1, date: 1 })
+    .find({}).populate('transactions',{ content: 1, date: 1 })
     response.json(users)
   })
 
-  usersEstablishmentRouter.post('/', async (request, response) => {
+usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
-  const existingUser = await EstablishmentUser.findOne({ username })
+  const existingUser = await User.findOne({ username })
   if (existingUser) {
     return response.status(400).json({
       error: 'username must be unique'
@@ -22,7 +22,7 @@ usersEstablishmentRouter.get('/', async (request, response) => {
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
-  const user = new EstablishmentUser({
+  const user = new User({
     username,
     name,
     passwordHash,
@@ -33,4 +33,4 @@ usersEstablishmentRouter.get('/', async (request, response) => {
   response.status(201).json(savedUser)
 })
 
-module.exports = usersEstablishmentRouter
+module.exports = usersRouter

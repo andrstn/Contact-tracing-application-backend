@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 const individualUsersRouter = require('express').Router()
-const IndividualUser = require('../models/Users/individual-user')
+const IndividualUser = require('../../models/Users/individual-user')
 
 individualUsersRouter.get('/', async (request, response) => {
     // const users = await User.find({})
