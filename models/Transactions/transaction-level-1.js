@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { transactionConnection } = require('../../app')
 
 const TransactionLevelOneSchema = new mongoose.Schema({
     user: {
@@ -28,5 +29,5 @@ TransactionLevelOneSchema.set('toJSON', {
     }
 })
 
-
-module.exports = mongoose.model('TransactionLevelOne', TransactionLevelOneSchema)
+// module.exports = mongoose.model('TransactionLevelOne', TransactionLevelOneSchema)
+module.exports = transactionConnection.model('TransactionLevelOne', TransactionLevelOneSchema)
