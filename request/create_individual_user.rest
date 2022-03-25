@@ -1,0 +1,28 @@
+POST http://localhost:3001/api/individual-user
+Content-Type: application/json
+
+{
+    "username": "kiswired",
+    "name": "Kis wired",
+    "password": "kiswired000"
+}
+
+###
+POST http://localhost:3001/api/individual-user
+Content-Type: application/json
+
+{
+    "username": "sudowoodo",
+    "name": "Superuser",
+    "password": "salainen"
+}
+
+###
+POST http://localhost:3001/api/individual-user
+Content-Type: application/json
+
+{
+    "username": "luffytaro",
+    "name": "Luffy",
+    "password": "imagination"
+}

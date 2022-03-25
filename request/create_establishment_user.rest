@@ -1,0 +1,28 @@
+POST http://localhost:3001/api/establishment-user
+Content-Type: application/json
+
+{
+    "username": "keirthjames",
+    "name": "Keirth James",
+    "password": "kj123"
+}
+
+###
+POST http://localhost:3001/api/establishment-user
+Content-Type: application/json
+
+{
+    "username": "sudowoodo",
+    "name": "Superuser",
+    "password": "salainen"
+}
+
+###
+POST http://localhost:3001/api/establishment-user
+Content-Type: application/json
+
+{
+    "username": "luffytaro",
+    "name": "Luffy",
+    "password": "imagination"
+}
