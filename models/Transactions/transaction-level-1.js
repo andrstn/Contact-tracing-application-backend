@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
-const { transactionConnection } = require('../../app')
+const { transactionConnection } = require('../../utils/connection')
 
-const TransactionLevelOneSchema = new mongoose.Schema({
-    user: {
+const transactionLevelOneSchema = new mongoose.Schema({
+    person: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Individual'
       },
     establishment: {
         type: mongoose.Schema.Types.ObjectId,
@@ -14,14 +14,19 @@ const TransactionLevelOneSchema = new mongoose.Schema({
         type: Date,
         required: true
       },
-      //covid Status
-    status: String,
-    //Time-in/Time-out
-    logStatus: String
-
+    status: {
+      type: String,
+      required: true
+    },
+    login: {
+      type: Date
+    },
+    logout: {
+      type: Date
+    }
 })
 
-TransactionLevelOneSchema.set('toJSON', {
+transactionLevelOneSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id
@@ -29,5 +34,4 @@ TransactionLevelOneSchema.set('toJSON', {
     }
 })
 
-// module.exports = mongoose.model('TransactionLevelOne', TransactionLevelOneSchema)
-module.exports = transactionConnection.model('TransactionLevelOne', TransactionLevelOneSchema)
+module.exports = transactionConnection.model('TransactionLevelOne', transactionLevelOneSchema)
