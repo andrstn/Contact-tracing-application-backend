@@ -48,7 +48,7 @@ const establishmentSchema = new mongoose.Schema({
     }  
 })
 
-establishmentUserSchema.set('toJSON', {
+establishmentSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
         delete returnedObject._id
@@ -61,7 +61,7 @@ establishmentUserSchema.set('toJSON', {
 establishmentSchema.plugin(uniqueValidator)
 
 
-const Establishment = establishmentConnection.model('Establishment', establishmentSchema)
+const Establishment = establishmentConnection.model('EstablishmentUser', establishmentSchema)
 
 
 module.exports =  Establishment
