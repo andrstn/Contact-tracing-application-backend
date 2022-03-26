@@ -76,7 +76,25 @@ const individualSchema = new mongoose.Schema({
   special: {
     type: Boolean,
     required: true
-  }
+  },
+  transactionLevelOne: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TransactionLevelOne'
+    }
+  ],
+  transactionLevelTwo: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TransactionLevelTwo'
+    }
+  ],
+  transactionLevelThree: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TransactionLevelThree'
+    }
+  ]
 })
 
 individualSchema.set('toJSON', {

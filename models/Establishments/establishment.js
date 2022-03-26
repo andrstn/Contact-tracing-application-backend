@@ -49,7 +49,25 @@ const establishmentSchema = new mongoose.Schema({
         type: String,
         minlength: 2,
         require: true
-    }  
+    },
+    transactionLevelOne: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'TransactionLevelOne'
+        }
+    ],
+    transactionLevelTwo: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'TransactionLevelTwo'
+        }
+    ],
+    transactionLevelThree: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'TransactionLevelThree'
+        }
+    ]
 })
 
 establishmentSchema.set('toJSON', {
