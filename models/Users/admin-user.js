@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const { userConnection } = require('../../utils/connection')
-// const uniqueValidator = require('mongoose-unique-validator')
+const uniqueValidator = require('mongoose-unique-validator')
 
 const adminUserSchema = new mongoose.Schema({
     username: {
@@ -22,12 +22,11 @@ adminUserSchema.set('toJSON', {
     }
 })
 
-// AdminUserSchema.plugin(uniqueValidator)
+adminUserSchema.plugin(uniqueValidator)
 
 
 
 const AdminUser = userConnection.model('AdminUser', adminUserSchema)
 
-//  module.exports = userConnection.model('AdminUser', adminUserSchema)
 
 module.exports =  AdminUser
