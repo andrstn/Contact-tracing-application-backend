@@ -27,14 +27,12 @@ function makeNewConnection(uri) {
 
 const userConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Users?retryWrites=true&w=majority')
 const transactionConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Transactions?retryWrites=true&w=majority')
+const individualConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Individuals?retryWrites=true&w=majority')
+const establishmentConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Establishments?retryWrites=true&w=majority')
 
 module.exports = {
     userConnection,
     transactionConnection,
+    individualConnection,
+    establishmentConnection
 };
-
-// const makeNewConnection =(uri) => {
-//     const db = mongoose.createConnection(uri, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//     });
