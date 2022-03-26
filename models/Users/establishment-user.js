@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-// const uniqueValidator = require('mongoose-unique-validator')
+const uniqueValidator = require('mongoose-unique-validator')
 const { userConnection } = require('../../utils/connection')
 
 const establishmentUserSchema = new mongoose.Schema({
@@ -26,7 +26,7 @@ establishmentUserSchema.set('toJSON', {
     }
 })
 
-// EstablishmentUserSchema.plugin(uniqueValidator)
+establishmentUserSchema.plugin(uniqueValidator)
 
 
 const EstablishmentUser = userConnection.model('EstablishmentUser', establishmentUserSchema)
