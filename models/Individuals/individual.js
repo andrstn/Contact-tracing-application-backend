@@ -60,13 +60,17 @@ const individualSchema = new mongoose.Schema({
     minlength: 2,
     required: true
   },
+  street: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
   resident: {
     type: Boolean,
     required: true
   },
-  street: {
-    type: String,
-    minlength: 2,
+  special: {
+    type: Boolean,
     required: true
   }
 })
