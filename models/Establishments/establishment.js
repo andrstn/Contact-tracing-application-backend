@@ -3,6 +3,10 @@ const uniqueValidator = require('mongoose-unique-validator')
 const { establishmentConnection } = require('../../utils/connection')
 
 const establishmentSchema = new mongoose.Schema({
+    accountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EstablishmentUser'
+    },
     name: {
         type: String,
         minlength: 2,

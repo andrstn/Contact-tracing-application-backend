@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const { individualConnection } = require('../../utils/connection')
 
 const individualSchema = new mongoose.Schema({
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'IndividualUser'
+  },
   firstName: {
     type: String,
     minlength: 2,
