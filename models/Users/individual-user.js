@@ -5,7 +5,10 @@ const individualUserSchema = new mongoose.Schema({
   username: String,
   name: String,
   passwordHash: String,
- 
+  person: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Individual'
+  }
 })
 
 individualUserSchema.set('toJSON', {
