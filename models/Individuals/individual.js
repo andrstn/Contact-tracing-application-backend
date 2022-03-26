@@ -2,19 +2,73 @@ const mongoose = require('mongoose')
 const { individualConnection } = require('../../utils/connection')
 
 const individualSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  suffix: String,
-  middleName: String,
-  gender: String,
-  birthDate: String,
-  contactNumber: String,
-  email: String,
-  province: String,
-  city: String,
-  barangay: String,
-  resident: Boolean,
-  street: String
+  firstName: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  lastName: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  suffix: {
+    type: String,
+    minlength: 2
+  },
+  middleName: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  gender: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  birthDate: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  contactNumber: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  email: {
+    type: String,
+    minlength: 2
+  },
+  status: {
+    type: String,
+    minlength: 1,
+    required: true
+  },
+  province: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  city: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  barangay: {
+    type: String,
+    minlength: 2,
+    required: true
+  },
+  resident: {
+    type: Boolean,
+    required: true
+  },
+  street: {
+    type: String,
+    minlength: 2,
+    required: true
+  }
 })
 
 individualSchema.set('toJSON', {
