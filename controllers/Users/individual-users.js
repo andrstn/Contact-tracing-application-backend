@@ -93,6 +93,7 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
   response.status(201).json({
     message: 'Username updated'
   })
+
 })
 
 // Update password
