@@ -11,18 +11,15 @@ usersIndividualRouter.get('/', async (request, response) => {
        firstName: 1,
        middleName:1,
        lastName: 1,
-       special: 1,
        contactNumber: 1,
-       email: 1,
        status: 1,
-       gender: 1
      })
 
     response.json(users)
  })
 
  // Individual Sign-up
-  usersIndividualRouter.post('/', async (request, response) => {
+  usersIndividualRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
   const existingUser = await IndividualUser.findOne({ username })
