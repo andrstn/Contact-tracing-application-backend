@@ -1,0 +1,16 @@
+PUT  http://localhost:3001/api/establishment-users/62415638014d50a68289992e/change-username
+Content-Type: application/json
+
+{
+    "username": "anthonyjames"
+}
+
+###
+PUT  http://localhost:3001/api/establishment-users/62415638014d50a68289992e/change-password
+Content-Type: application/json
+
+{
+    "username": "anthonyjames",
+    "oldPassword": "salainen",
+    "newPassword": "lightrain"
+}
