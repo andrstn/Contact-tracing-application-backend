@@ -1,16 +1,29 @@
 const bcrypt = require('bcrypt')
-const individualUsersRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
+const usersIndividualRouter = require('express').Router()
 const IndividualUser = require('../../models/Users/individual-user')
 
-individualUsersRouter.get('/', async (request, response) => {
-    // const users = await User.find({})
+// Get all individual users
+usersIndividualRouter.get('/', async (request, response) => {
     const users = await IndividualUser
-    .find({}).populate('transactions',{ content: 1, date: 1 })
-    response.json(users)
-  })
+     .find({})
+     .populate('individual',{ 
+       firstName: 1,
+       middleName:1,
+       lastName: 1,
+       special: 1,
+       contactNumber: 1,
+       email: 1,
+       status: 1,
+       gender: 1
+     })
 
-  individualUsersRouter.post('/', async (request, response) => {
-  const { username, name, password } = request.body
+    response.json(users)
+ })
+
+ // Individual Sign-up
+  usersIndividualRouter.post('/', async (request, response) => {
+  const { username, password } = request.body
 
   const existingUser = await IndividualUser.findOne({ username })
   if (existingUser) {
@@ -24,7 +37,6 @@ individualUsersRouter.get('/', async (request, response) => {
 
   const user = new IndividualUser({
     username,
-    name,
     passwordHash,
   })
 
@@ -33,4 +45,35 @@ individualUsersRouter.get('/', async (request, response) => {
   response.status(201).json(savedUser)
 })
 
-module.exports = individualUsersRouter
+// Individual Log-in
+usersIndividualRouter.post('/log-in', async (request, response) => {
+  const body = request.body
+
+  const user = await IndividualUser.findOne({username: body.username})
+  const passwordCorrect = user === null
+      ? false
+      : await bcrypt.compare(body.password, user.passwordHash)
+
+  if (!user) {
+      return response.status(401).json({error: 'invalid username'})
+  }
+
+  if (!passwordCorrect) {
+    return response.status(401).json({error: 'invalid password'})
+  }
+
+  const userForToken = {
+      username: user.username,
+      id: user._id
+  }
+
+  const token = jwt.sign(userForToken, process.env.SECRET)
+
+  response.status(200).send({
+      token,
+      username: user.username,
+      id: user._id
+  })
+})
+
+module.exports = usersIndividualRouter
