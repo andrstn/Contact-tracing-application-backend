@@ -1,4 +1,4 @@
-POST http://localhost:3001/api/admin-user
+POST http://localhost:3001/api/admin-users/sign-up
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3001/api/admin-user
+POST http://localhost:3001/api/admin-users/sign-up
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3001/api/admin-user
+POST http://localhost:3001/api/admin-users
 Content-Type: application/json
 
 {
