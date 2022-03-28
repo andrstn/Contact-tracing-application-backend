@@ -7,7 +7,7 @@ const IndividualUser = require('../../models/Users/individual-user')
 usersIndividualRouter.get('/', async (request, response) => {
     const users = await IndividualUser
      .find({})
-     .populate('individual',{ 
+     .populate('person',{ 
        firstName: 1,
        middleName:1,
        lastName: 1,
