@@ -5,6 +5,14 @@ const AdminUser = require('../../models/Users/admin-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
 
+const getTokenFrom = request => {
+  const authorization = request.get('Authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
+
 // Admin Sign-up
 usersAdminRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
