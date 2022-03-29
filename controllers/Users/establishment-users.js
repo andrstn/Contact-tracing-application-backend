@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const usersEstablishmentRouter = require('express').Router()
 const EstablishmentUser = require('../../models/Users/establishment-user')
-const { establishmentConnection } = require('../../utils/connection')
+const IndividualUser = require('../../models/Users/individual-user')
 
 // Get all establishment users
 usersEstablishmentRouter.get('/', async (request, response) => {
@@ -81,8 +81,15 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
     username: username
   }
 
-  const existingUser = await EstablishmentUser.findOne({ username })
-  if (existingUser) {
+  const existingIndividualUser = await IndividualUser.findOne({ username })
+  if (existingIndividualUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
+    })
+  }
+
+  const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
+  if (existingEstablishmentUser) {
     return response.status(400).json({
       error: 'username must be unique'
     })
