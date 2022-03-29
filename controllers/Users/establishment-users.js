@@ -1,10 +1,8 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const AdminUser = require('../../models/Users/admin-user')
 const usersEstablishmentRouter = require('express').Router()
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
-const { establishmentConnection } = require('../../utils/connection')
 
 // Get all establishment users
 usersEstablishmentRouter.get('/', async (request, response) => {
@@ -24,10 +22,17 @@ usersEstablishmentRouter.get('/', async (request, response) => {
 usersEstablishmentRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
-  const existingUser = await EstablishmentUser.findOne({ username })
-  if (existingUser) {
+  const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
+  if (existingEstablishmentUser) {
     return response.status(400).json({
-      error: 'Username must be unique.'
+      error: 'username must be unique'
+    })
+  }
+
+  const existingIndividualUser = await IndividualUser.findOne({ username })
+  if (existingIndividualUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
     })
   }
 
@@ -83,8 +88,15 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
     username: username
   }
 
-  const existingUser = await EstablishmentUser.findOne({ username })
-  if (existingUser) {
+  const existingIndividualUser = await IndividualUser.findOne({ username })
+  if (existingIndividualUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
+    })
+  }
+
+  const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
+  if (existingEstablishmentUser) {
     return response.status(400).json({
       error: 'username must be unique'
     })
@@ -94,6 +106,8 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
   response.status(201).json({
     message: 'Username updated'
   })
+
+
 })
 
 // Update password

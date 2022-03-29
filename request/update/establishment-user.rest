@@ -14,3 +14,13 @@ Content-Type: application/json
     "oldPassword": "salainen",
     "newPassword": "lightrain"
 }
+
+###
+PUT  http://localhost:3001/api/establishment-users/624308728a6f0f9d401fbbf7/change-password
+Content-Type: application/json
+
+{
+    "username": "luffytaro",
+    "oldPassword": "imagination",
+    "newPassword": "21312412322341"
+}
