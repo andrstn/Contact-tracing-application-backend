@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const usersAdminRouter = require('express').Router()
 const AdminUser = require('../../models/Users/admin-user')
-
+const EstablishmentUser = require('../../models/Users/establishment-user')
+const IndividualUser = require('../../models/Users/individual-user')
 
 // Admin Sign-up
 usersAdminRouter.post('/sign-up', async (request, response) => {
@@ -44,7 +45,6 @@ usersAdminRouter.post('/log-in', async (request, response) => {
   if (!passwordCorrect) {
     return response.status(401).json({error: 'invalid password'})
   }
-
 
   const userForToken = {
       username: user.username,
@@ -105,6 +105,55 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
   await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
   response.status(201).json({
     message: 'Password updated'
+  })
+})
+
+// Delete Individual user
+usersEstablishmentRouter.delete('/individual/:id', async (request, response) => {
+  const token = getTokenFrom(request)
+
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!token || !decodedToken) {
+    return response.status(401).json({
+      error: 'Token missing or invalid.'
+    })
+  }
+
+  const admin = await AdminUser.findById(decodedToken.id)
+  if (!admin) {
+    return response.status(401).json({
+      error: 'Unauthorized user for the action.'
+    })
+  }
+
+  const deletedIndividual = await IndividualUser.findByIdAndDelete(request.params.id)
+  return response.status(204).json({
+    message: `${deletedIndividual.username} deleted.`
+  })
+})
+
+// Delete Establishment user
+usersEstablishmentRouter.delete('/establishment/:id', async (request, response) => {
+  const token = getTokenFrom(request)
+
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!token || !decodedToken) {
+    return response.status(401).json({
+      error: 'Token missing or invalid.'
+    })
+  }
+
+  const admin = await AdminUser.findById(decodedToken.id)
+  if (!admin) {
+    return response.status(401).json({
+      error: 'Unauthorized user for the action.'
+    })
+  }
+
+
+  const deletedEstablishment = await EstablishmentUser.findByIdAndDelete(request.params.id)
+  return response.status(204).json({
+    message: `${deletedEstablishment.username} deleted.`
   })
 })
 

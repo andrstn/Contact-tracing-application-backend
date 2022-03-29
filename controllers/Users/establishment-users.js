@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const AdminUser = require('../../models/Users/admin-user')
 const usersEstablishmentRouter = require('express').Router()
 const EstablishmentUser = require('../../models/Users/establishment-user')
+const IndividualUser = require('../../models/Users/individual-user')
 const { establishmentConnection } = require('../../utils/connection')
 
 // Get all establishment users
