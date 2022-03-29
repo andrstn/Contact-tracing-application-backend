@@ -1,4 +1,4 @@
-PUT  http://localhost:3001/api/individual-users/62416389fdb35cabb83bee53/change-username
+PUT  http://localhost:3001/api/individual-users/6241613880f715524334f3a2/change-username
 Content-Type: application/json
 
 {

@@ -23,8 +23,15 @@ usersIndividualRouter.get('/', async (request, response) => {
   usersIndividualRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
-  const existingUser = await IndividualUser.findOne({ username })
-  if (existingUser) {
+  const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
+  if (existingEstablishmentUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
+    })
+  }
+
+  const existingIndividualUser = await IndividualUser.findOne({ username })
+  if (existingIndividualUser) {
     return response.status(400).json({
       error: 'username must be unique'
     })
