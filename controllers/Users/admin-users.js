@@ -109,7 +109,7 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
 })
 
 // Delete Individual user
-usersEstablishmentRouter.delete('/individual/:id', async (request, response) => {
+usersAdminRouter.delete('/individual/:id', async (request, response) => {
   const token = getTokenFrom(request)
 
   const decodedToken = jwt.verify(token, process.env.SECRET)
@@ -133,7 +133,7 @@ usersEstablishmentRouter.delete('/individual/:id', async (request, response) => 
 })
 
 // Delete Establishment user
-usersEstablishmentRouter.delete('/establishment/:id', async (request, response) => {
+usersAdminRouter.delete('/establishment/:id', async (request, response) => {
   const token = getTokenFrom(request)
 
   const decodedToken = jwt.verify(token, process.env.SECRET)
