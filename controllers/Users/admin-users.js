@@ -68,6 +68,13 @@ usersAdminRouter.put('/:id/change-username', async (request, response) => {
     username: username
   }
 
+  const existingUser = await AdminUser.findOne({ username })
+  if (existingUser) {
+    return response.status(400).json({
+      error: 'username must be unique'
+    })
+  }
+
   await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
   response.status(201).json({
     message: 'Username updated'
