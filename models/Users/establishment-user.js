@@ -6,6 +6,7 @@ const establishmentUserSchema = new mongoose.Schema({
     username: {
         type: String,
         minlength: 8,
+        required: true,
         unique: true
     },
     name: String,

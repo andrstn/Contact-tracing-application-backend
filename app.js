@@ -1,7 +1,7 @@
 const config = require('./utils/config')
 const connections = require('./utils/connection')
 const express = require('express')
-// require('express-async-errors')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
@@ -44,8 +44,8 @@ app.use('/api/establishment-users', usersEstablishmentRouter)
 app.use('/api/individual-users', usersIndividualRouter)
 
 // app.use(middleware.requestLogger)
-// app.use(middleware.unknownEndpoint)
-// app.use(middleware.errorHandler)
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 
 module.exports = app

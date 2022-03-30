@@ -8,12 +8,12 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3001/api/individual-users
+POST http://localhost:3001/api/individual-users/sign-up
 Content-Type: application/json
 
 {
-    "username": "sudowoodo",
-    "name": "Superuser",
+    "username": "lukeandres",
+    "name": "Luke Andres",
     "password": "salainen"
 }
 
@@ -22,8 +22,8 @@ POST http://localhost:3001/api/individual-users/sign-up
 Content-Type: application/json
 
 {
-    "username": "luffytaro",
-    "name": "Luffy",
+    "username": "merhostnacab",
+    "name": "Merho Stnacab",
     "password": "imagination"
 }
 
@@ -36,4 +36,24 @@ Content-Type: application/json
     "name": "Luffy",
     "password": "imagination"
 }
+
+###
+POST http://localhost:3001/api/individual-users/sign-up
+Content-Type: application/json
+
+{
+    "username": "keirthjames",
+    "name": "Keirth James",
+    "password": "kj123"
+}
+
+###
+POST http://localhost:3001/api/individual-users/sign-up
+Content-Type: application/json
+
+{
+    "name": "Luke Andres",
+    "password": "salainen"
+}
+
 

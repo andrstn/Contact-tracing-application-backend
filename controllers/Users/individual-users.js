@@ -26,14 +26,14 @@ usersIndividualRouter.get('/', async (request, response) => {
   const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
   if (existingEstablishmentUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'Username must be unique.'
     })
   }
 
   const existingIndividualUser = await IndividualUser.findOne({ username })
   if (existingIndividualUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'Username must be unique.'
     })
   }
 
@@ -45,9 +45,14 @@ usersIndividualRouter.get('/', async (request, response) => {
     passwordHash,
   })
 
-  const savedUser = await user.save()
-
-  response.status(201).json(savedUser)
+  try {
+    const savedUser = await user.save()
+    response.status(201).json(savedUser)
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to create user.'
+    })
+  }
 })
 
 // Individual Log-in
@@ -60,11 +65,11 @@ usersIndividualRouter.post('/log-in', async (request, response) => {
       : await bcrypt.compare(body.password, user.passwordHash)
 
   if (!user) {
-      return response.status(401).json({error: 'invalid username'})
+      return response.status(401).json({error: 'Invalid username.'})
   }
 
   if (!passwordCorrect) {
-    return response.status(401).json({error: 'invalid password'})
+    return response.status(401).json({error: 'Invalid password.'})
   }
 
   const userForToken = {
@@ -93,20 +98,20 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
   const existingIndividualUser = await IndividualUser.findOne({ username })
   if (existingIndividualUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'Username must be unique.'
     })
   }
 
   const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
   if (existingEstablishmentUser) {
     return response.status(400).json({
-      error: 'username must be unique'
+      error: 'Username must be unique.'
     })
   }
 
   await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
   response.status(201).json({
-    message: 'Username updated'
+    message: 'Username updated.'
   })
 
 })
@@ -121,7 +126,7 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
       : await bcrypt.compare(oldPassword, user.passwordHash)
 
   if (!oldPasswordCorrect) {
-    return response.status(401).json({error: 'invalid old password'})
+    return response.status(401).json({error: 'Invalid old password.'})
   }
 
   const saltRounds = 10
@@ -134,7 +139,7 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
 
   await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
   response.status(201).json({
-    message: 'Password updated'
+    message: 'Password updated.'
   })
 })
 
