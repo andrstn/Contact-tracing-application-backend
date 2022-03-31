@@ -77,6 +77,12 @@ usersAdminRouter.post('/log-in', async (request, response) => {
 usersAdminRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
+  if (username.length > 8) {
+    return response.status(400).json({
+      error: 'Username must be atleast 8 characters.'
+    })
+  }
+
   const updateUser = {
     username: username
   }
@@ -87,11 +93,16 @@ usersAdminRouter.put('/:id/change-username', async (request, response) => {
       error: 'Username must be unique.'
     })
   }
-
-  await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Username updated.'
-  })
+  try {
+    await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(201).json({
+      message: 'Username updated.'
+    })
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to update username.'
+    })
+  }
 })
 
 // Update password
@@ -115,10 +126,16 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
     passwordHash: passwordHash
   }
 
-  await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Password updated.'
-  })
+  try {
+    await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(201).json({
+      message: 'Password updated.'
+    })
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to update user password.'
+    })
+  }
 })
 
 // Delete Individual user
