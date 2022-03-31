@@ -6,6 +6,7 @@ const IndividualUser = require('../../models/Users/individual-user')
 
 // Get all establishment users
 usersEstablishmentRouter.get('/', async (request, response) => {
+  try {
     const users = await EstablishmentUser
       .find({})
       .populate('establishment',{
@@ -14,8 +15,12 @@ usersEstablishmentRouter.get('/', async (request, response) => {
         level: 1, 
         mobileNumber: 1
       })
-
     response.json(users)
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to create retrieve establishment user.'
+    })
+  }
 })
 
 // Establishment Sign-up
@@ -46,10 +51,10 @@ usersEstablishmentRouter.post('/sign-up', async (request, response) => {
 
   try {
     const savedUser = await user.save()
-    response.status(201).json(savedUser)
+     response.status(201).json(savedUser)
   } catch (error) {
-    return response.status(401).json({
-      error: 'Failed to create user.'
+      return response.status(401).json({
+       error: 'Failed to create user.'
     })
   }
 })
@@ -106,13 +111,16 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
       error: 'Username must be unique.'
     })
   }
-
-  await EstablishmentUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Username updated.'
-  })
-
-
+  try {
+    await EstablishmentUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(201).json({
+      message: 'Username updated.'
+    })
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to update username.'
+   })
+  }
 })
 
 // Update password
@@ -135,11 +143,16 @@ usersEstablishmentRouter.put('/:id/change-password', async (request, response) =
     username: username,
     passwordHash: passwordHash
   }
-
-  await EstablishmentUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Password updated.'
-  })
+  try {
+    await EstablishmentUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(201).json({
+      message: 'Password updated.'
+    })
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to update password.'
+   })
+  }
 })
 
 module.exports = usersEstablishmentRouter
