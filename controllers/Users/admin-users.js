@@ -77,7 +77,7 @@ usersAdminRouter.post('/log-in', async (request, response) => {
 usersAdminRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
-  if (username.length > 8) {
+  if (username.length < 8) {
     return response.status(400).json({
       error: 'Username must be atleast 8 characters.'
     })
