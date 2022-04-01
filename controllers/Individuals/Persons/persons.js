@@ -1,7 +1,7 @@
 const personsRouter = require('express').Router()
-const Individual = require('../../models/Individuals/individual')
+const Individual = require('../../../models/Individuals/individual')
 const jwt = require('jsonwebtoken')
-const IndividualUser = require('../../models/Users/individual-user')
+const IndividualUser = require('../../../models/Users/individual-user')
 
 
 const getTokenFrom = request => {

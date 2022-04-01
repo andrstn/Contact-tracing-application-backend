@@ -64,22 +64,30 @@ handler.post('/transactions', async (request, response) => {
 
         // Person update
         try {
-            let login = {}
+            // let login = {}
             if (establishment.level === 1) {
-                const login = new Individual({
+                const login = {
                     transactionLevelOne: person.transactionLevelOne.push(savedTransaction._id)
-                })
+                }
+            await Individual.findByIdAndUpdate(personId , login, {new : true})
+
+
             } else if (establishment.level === 2) {
-                const login = new Individual({
+                const login = {
                     transactionLevelTwo: person.transactionLevelTwo.push(savedTransaction._id)
-                })
+                }
+            await Individual.findByIdAndUpdate(personId , login, {new : true})
+
+
             } else if (establishment.level === 3) {
-                const login = new Individual({
+                const login = {
                     transactionLevelThree: person.transactionLevelThree.push(savedTransaction._id)
-                })
+                }
+            await Individual.findByIdAndUpdate(personId , login, {new : true})
+
+
             }
 
-            await login.save()
         } catch (error) {
             if (establishment.level === 1) {
                 await TransactionLevelOne.findByIdAndDelete(savedTransaction._id)
@@ -89,28 +97,36 @@ handler.post('/transactions', async (request, response) => {
                 await TransactionLevelThree.findByIdAndDelete(savedTransaction._id)
             }
             return response.status(401).json({
-                message: 'Failed to save transaction.'
+                message: 'Failed to save transaction one.'
             })
         }
 
         // Establishment update
         try {
-            let login = {}
+            // let login = {}
             if (establishment.level === 1) {
-                const login = new Establishment({
+               const login = {
                     transactionLevelOne: establishment.transactionLevelOne.push(savedTransaction._id)
-                })
+                }
+            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
+
+
             } else if (establishment.level === 2) {
-                const login = new Establishment({
+                const login = {
                     transactionLevelTwo: establishment.transactionLevelTwo.push(savedTransaction._id)
-                })
+                }
+            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
+
+
             } else if (establishment.level === 3) {
-                const login = new Establishment({
+                const login = {
                     transactionLevelThree: establishment.transactionLevelThree.push(savedTransaction._id)
-                })
+                }
+            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
+
+
             }
 
-            await login.save()
         } catch (error) {
             if (establishment.level === 1) {
                 await TransactionLevelOne.findByIdAndDelete(savedTransaction._id)
@@ -120,7 +136,7 @@ handler.post('/transactions', async (request, response) => {
                 await TransactionLevelThree.findByIdAndDelete(savedTransaction._id)
             }
             return response.status(401).json({
-                message: 'Failed to save transaction.'
+                message: 'Failed to save transaction two.'
             })
         }
 
@@ -130,7 +146,7 @@ handler.post('/transactions', async (request, response) => {
         })
     } catch (error) {
         return response.status(401).json({
-            message: 'Failed to save transaction.'
+            message: 'Failed to save transaction three.'
         })
     }
 })

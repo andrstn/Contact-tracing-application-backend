@@ -31,7 +31,7 @@ POST http://localhost:3001/api/admin-users/sign-up
 Content-Type: application/json
 
 {
-    "username": "luffytaro",
-    "name": "Luffy",
+    "username": "asdfsasdfadf",
+    "name": "tonyo",
     "password": "imagination"
 }
