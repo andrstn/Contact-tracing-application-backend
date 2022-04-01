@@ -5,30 +5,16 @@ require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
-const usersRouter = require('./controllers/Users/users')
-const usersAdminRouter = require('./controllers/Users/admin-users')
-const usersEstablishmentRouter = require('./controllers/Users/establishment-users')
-const usersIndividualRouter = require('./controllers/Users/individual-users')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 
-// logger.info('Connecting to', config.MONGODB_USER_URI)
-// logger.info('Connecting to', config.MONGODB_TRANSACTIONS_URI)
-
-// logger.info('Connecting to', 'mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Users?retryWrites=true&w=majority')
-// logger.info('Connecting to', 'mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Transactions?retryWrites=true&w=majority')
-
-
-// logger.info('Connecting to', config.MONGODB_USER_URI)
-// mongoose.connect(config.MONGODB_USER_URI)
-//     .then(() => {
-//         logger.info('Connected to MongoDB')
-//     })
-//     .catch((error) => {
-//         logger.error('error connecting to MongoDB:', error.message)
-//     })
-
+// Import Routers
+const usersRouter = require('./controllers/Users/users')
+const usersAdminRouter = require('./controllers/Users/admin-users')
+const usersEstablishmentRouter = require('./controllers/Users/establishment-users')
+const usersIndividualRouter = require('./controllers/Users/individual-users')
+const addTransactionRouter = require('./controllers/Transactions/add-transaction')
 
 morgan.token('body', (request, response) => {
     return JSON.stringify(request.body)
@@ -43,7 +29,9 @@ app.use('/api/admin-users', usersAdminRouter)
 app.use('/api/establishment-users', usersEstablishmentRouter)
 app.use('/api/individual-users', usersIndividualRouter)
 
-// app.use(middleware.requestLogger)
+// Transactions Router
+app.use('/api/transactions', addTransactionRouter)
+
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 

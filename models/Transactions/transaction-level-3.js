@@ -34,4 +34,6 @@ transactionLevelThreeSchema.set('toJSON', {
     }
 })
 
-module.exports = transactionConnection.model('TransactionLevelThree', transactionLevelThreeSchema)
+const TransactionLevelThree = transactionConnection.model('TransactionLevelThree', transactionLevelThreeSchema)
+
+module.exports = TransactionLevelThree

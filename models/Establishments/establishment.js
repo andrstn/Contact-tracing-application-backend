@@ -18,7 +18,7 @@ const establishmentSchema = new mongoose.Schema({
         require: true
     },
     level: {
-        type: String,
+        type: Number,
         require: true
     },
     mobileNumber: {

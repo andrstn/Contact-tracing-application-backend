@@ -8,22 +8,21 @@ const EstablishmentUser = require('../../models/Users/establishment-user')
 usersIndividualRouter.get('/', async (request, response) => {
   try {
     const users = await IndividualUser
-      .find({})
-      .populate('person',{ 
-        firstName: 1,
-        middleName:1,
-        lastName: 1,
-        contactNumber: 1,
-        status: 1,
-      })
-
+     .find({})
+     .populate('person',{ 
+       firstName: 1,
+       middleName:1,
+       lastName: 1,
+       contactNumber: 1,
+       status: 1,
+     })
     response.json(users)
   } catch (error) {
     return response.status(401).json({
       error: 'Failed to retrieve individual user.'
     })
-  }
-})
+   }
+ })
 
  // Individual Sign-up
   usersIndividualRouter.post('/sign-up', async (request, response) => {
@@ -115,16 +114,11 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
     })
   }
 
-  try {
-    await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-    response.status(201).json({
-      message: 'Username updated.'
-    })
-  } catch (error) {
-    return response.status(401).json({
-      error: 'Failed to update username.'
-    })
-  }
+  await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+  response.status(201).json({
+    message: 'Username updated.'
+  })
+
 })
 
 // Update password
@@ -148,16 +142,10 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
     passwordHash: passwordHash
   }
 
-  try {
-    await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-    response.status(201).json({
-      message: 'Password updated.'
-    })
-  } catch (error) {
-    return response.status(401).json({
-      error: 'Failed to update password.'
-    })
-  }
+  await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+  response.status(201).json({
+    message: 'Password updated.'
+  })
 })
 
 module.exports = usersIndividualRouter

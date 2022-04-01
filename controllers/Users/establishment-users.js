@@ -18,7 +18,7 @@ usersEstablishmentRouter.get('/', async (request, response) => {
     response.json(users)
   } catch (error) {
     return response.status(401).json({
-      error: 'Failed to create retrieve establishment user.'
+      error: 'Failed to retrieve establishment user.'
     })
   }
 })
