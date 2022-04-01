@@ -106,21 +106,21 @@ handler.post('/transactions', async (request, response) => {
             // let login = {}
             if (establishment.level === 1) {
                 const newTransactionLevelOne = establishment.transactionLevelOne
-                const addTransaction = newTransactionLevelOne.push(savedTransaction._id)
+                const add = newTransactionLevelOne.push(savedTransaction._id)
                 const login = {
                     transactionLevelOne: newTransactionLevelOne
                 }
                 await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
             } else if (establishment.level === 2) {
                 const newTransactionLevelTwo = establishment.transactionLevelTwo
-                const addTransaction = newTransactionLevelTwo.push(savedTransaction._id)
+                const add = newTransactionLevelTwo.push(savedTransaction._id)
                 const login = {
                     transactionLevelTwo: newTransactionLevelTwo
                 }
                 await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
             } else if (establishment.level === 3) {
                 const newTransactionLevelThree = establishment.transactionLevelThree
-                const addTransaction = newTransactionLevelThree.push(savedTransaction._id)
+                const add = newTransactionLevelThree.push(savedTransaction._id)
                 const login = {
                     transactionLevelThree: newTransactionLevelThree
                 }
