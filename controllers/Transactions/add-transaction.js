@@ -66,26 +66,26 @@ handler.post('/transactions', async (request, response) => {
         try {
             // let login = {}
             if (establishment.level === 1) {
+                const newTransactionLevelOne = person.transactionLevelOne
+                const addTransaction = newTransactionLevelOne.push(savedTransaction._id)
                 const login = {
-                    transactionLevelOne: person.transactionLevelOne.push(savedTransaction._id)
+                    transactionLevelOne: newTransactionLevelOne
                 }
-            await Individual.findByIdAndUpdate(personId , login, {new : true})
-
-
+                await Individual.findByIdAndUpdate(personId , login, {new : true})
             } else if (establishment.level === 2) {
+                const newTransactionLevelTwo = person.transactionLevelTwo
+                const addTransaction = newTransactionLevelTwo.push(savedTransaction._id)
                 const login = {
-                    transactionLevelTwo: person.transactionLevelTwo.push(savedTransaction._id)
+                    transactionLevelTwo: newTransactionLevelTwo
                 }
-            await Individual.findByIdAndUpdate(personId , login, {new : true})
-
-
+                await Individual.findByIdAndUpdate(personId , login, {new : true})
             } else if (establishment.level === 3) {
+                const newTransactionLevelThree = person.transactionLevelThree
+                const addTransaction = newTransactionLevelThree.push(savedTransaction._id)
                 const login = {
-                    transactionLevelThree: person.transactionLevelThree.push(savedTransaction._id)
+                    transactionLevelThree: newTransactionLevelThree
                 }
-            await Individual.findByIdAndUpdate(personId , login, {new : true})
-
-
+                await Individual.findByIdAndUpdate(personId , login, {new : true})
             }
 
         } catch (error) {
@@ -105,26 +105,26 @@ handler.post('/transactions', async (request, response) => {
         try {
             // let login = {}
             if (establishment.level === 1) {
-               const login = {
-                    transactionLevelOne: establishment.transactionLevelOne.push(savedTransaction._id)
+                const newTransactionLevelOne = establishment.transactionLevelOne
+                const addTransaction = newTransactionLevelOne.push(savedTransaction._id)
+                const login = {
+                    transactionLevelOne: newTransactionLevelOne
                 }
-            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
-
-
+                await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
             } else if (establishment.level === 2) {
+                const newTransactionLevelTwo = establishment.transactionLevelTwo
+                const addTransaction = newTransactionLevelTwo.push(savedTransaction._id)
                 const login = {
-                    transactionLevelTwo: establishment.transactionLevelTwo.push(savedTransaction._id)
+                    transactionLevelTwo: newTransactionLevelTwo
                 }
-            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
-
-
+                await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
             } else if (establishment.level === 3) {
+                const newTransactionLevelThree = establishment.transactionLevelThree
+                const addTransaction = newTransactionLevelThree.push(savedTransaction._id)
                 const login = {
-                    transactionLevelThree: establishment.transactionLevelThree.push(savedTransaction._id)
+                    transactionLevelThree: newTransactionLevelThree
                 }
-            await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
-
-
+                await Establishment.findByIdAndUpdate(establishmentId , login, {new : true})
             }
 
         } catch (error) {
