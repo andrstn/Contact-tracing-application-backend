@@ -6,7 +6,7 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imtpc
     "firstName": "asdfasdfa",
     "lastName": "Strange",
     "middleName": "Doctor",
-    "suffix": "Sr.",
+    "suffix": "",
     "gender": "Male",
     "birthDate": "1 April 2000",
     "contactNumber": "09885667495",

@@ -11,6 +11,7 @@ handler.get('/transaction-one', async (request, response) => {
     const handler = await TransactionLevelOne
     .find({})
     .populate('person',{ firstName: 1, lastName: 1}, Individual) 
+    .populate('establishment',{ name: 1, level: 1}, Establishment) 
     response.json(handler)
   })
 

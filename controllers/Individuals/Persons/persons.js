@@ -36,27 +36,7 @@ personsRouter.get('/', async (request, response) => {
 personsRouter.get('/:id', async (request, response) => {
   try {
       const persons = await Individual
-        .find({})
-        .populate('Individual',{
-            firstName: 1,
-            lastName: 1,
-            middleName: 1,
-            suffix: 1,
-            gender: 1,
-            birthDate: 1,
-            contactNumber: 1,
-            email: 1,
-            status: 1,
-            province: 1,
-            city: 1,
-            barangay: 1,
-            street: 1,
-            resident:1 ,
-            special: 1,
-            transactionLevelOne: 1,
-            transactionLevelTwo: 1,
-            transactionLevelThree: 1
-        })
+        .findById(request.params.id)
       response.json(persons)
     } catch (error) {
       return response.status(401).json({
