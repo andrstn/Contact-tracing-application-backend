@@ -5,8 +5,7 @@ const IndividualUser = require('../../../models/Users/individual-user')
 const TransactionLevelOne = require('../../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
-
-
+const Establishment = require('../../../models/Establishments/establishment')
 
 const getTokenFrom = request => {
     const authorization = request.get('authorization')
@@ -35,34 +34,36 @@ personsRouter.get('/', async (request, response) => {
 //Gets specific profile
 personsRouter.get('/:id', async (request, response) => {
   try {
-      const persons = await Individual
-        .find({})
-        .populate('Individual',{
-            firstName: 1,
-            lastName: 1,
-            middleName: 1,
-            suffix: 1,
-            gender: 1,
-            birthDate: 1,
-            contactNumber: 1,
-            email: 1,
-            status: 1,
-            province: 1,
-            city: 1,
-            barangay: 1,
-            street: 1,
-            resident:1 ,
-            special: 1,
-            transactionLevelOne: 1,
-            transactionLevelTwo: 1,
-            transactionLevelThree: 1
-        })
-      response.json(persons)
-    } catch (error) {
-      return response.status(401).json({
-        error: 'Failed to retrieve profile'
-      })
-    }
+    const person = await Individual
+      .findById(request.params.id)
+      .populate('transactionLevelOne', {
+        establishment: 1,
+        date: 1,
+        status: 1,
+        login: 1,
+        logout: 1
+      }, TransactionLevelOne)
+      .populate('transactionLevelTwo', {
+        establishment: 1,
+        date: 1,
+        status: 1,
+        login: 1,
+        logout: 1
+      }, TransactionLevelTwo)
+      .populate('transactionLevelThree', {
+        establishment: 1,
+        date: 1,
+        status: 1,
+        login: 1,
+        logout: 1
+      }, TransactionLevelThree)
+    
+    response.json(person)
+  } catch (error) {
+    return response.status(401).json({
+      error: 'Failed to retrieve profile'
+    })
+  }
 })
 
 // Profile Sign-up
