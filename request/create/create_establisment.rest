@@ -1,0 +1,15 @@
+POST http://localhost:3001/api/establishments/sign-up
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtlaXJ0aGphbWVzIiwiaWQiOiI2MjQzZmMyZWZlYmQyNDBjNjYzYjIyMDIiLCJpYXQiOjE2NDg4MjY3MzV9.HV_b5fppUsjpxewk2tAae_sW1WtVQQ_WR5ec6VHLI6M
+
+{
+    "name": "james",
+    "type": "Strange",
+    "level": 3,
+    "mobileNumber": "080840112158188065",
+    "hotlineNumber": "1321841684",
+    "province": "Lanao del Norte",
+    "city": "Iligan City",
+    "barangay": "Tibanga",
+    "street": "TransMotor St. :)",
+}

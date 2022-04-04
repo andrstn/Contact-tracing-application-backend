@@ -2,6 +2,10 @@ const personsRouter = require('express').Router()
 const Individual = require('../../../models/Individuals/individual')
 const jwt = require('jsonwebtoken')
 const IndividualUser = require('../../../models/Users/individual-user')
+const TransactionLevelOne = require('../../../models/Transactions/transaction-level-1')
+const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
+const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
+
 
 
 const getTokenFrom = request => {
@@ -17,16 +21,9 @@ personsRouter.get('/', async (request, response) => {
   try {
     const persons = await Individual
       .find({})
-      .populate('transactionLevelOne',{
-          
-      })
-      .populate('transactionLevelTwo',{
-
-      })
-      .populate('transactionLevelThree',{
-
-      })
-
+      .populate('transactionLevelOne','date', TransactionLevelOne )
+      .populate('transactionLevelTwo','date', TransactionLevelTwo )
+      .populate('transactionLevelThree','date', TransactionLevelThree )
     response.json(persons)
   } catch (error) {
     return response.status(401).json({
@@ -101,7 +98,7 @@ personsRouter.post('/sign-up', async (request, response) => {
     transactionLevelOne: [],
     transactionLevelTwo: [],
     transactionLevelThree: [],
-    user: user._id
+    accountId: user._id
   })
 
   try {

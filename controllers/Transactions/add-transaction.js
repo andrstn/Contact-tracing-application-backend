@@ -5,6 +5,30 @@ const TransactionLevelTwo = require('../../models/Transactions/transaction-level
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
 const handler = require('express').Router()
 
+
+// Get Transactions each level
+handler.get('/transaction-one', async (request, response) => {
+    const handler = await TransactionLevelOne
+    .find({})
+    .populate('person',{ firstName: 1, lastName: 1}, Individual) 
+    response.json(handler)
+  })
+
+handler.get('/transaction-two', async (request, response) => {
+    const handler = await TransactionLevelTwo
+    .find({})
+    response.json(handler)
+  })
+
+handler.get('/transaction-three', async (request, response) => {
+    const handler = await TransactionLevelThree
+    .find({})
+    .populate('person', 'firstName', Individual) 
+    response.json(handler)
+  })
+
+
+
 handler.post('/transactions', async (request, response) => {
     const {
         personId,
