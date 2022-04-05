@@ -6,6 +6,7 @@ const TransactionLevelOne = require('../../../models/Transactions/transaction-le
 const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
 const Establishment = require('../../../models/Establishments/establishment')
+const { forEach } = require('lodash')
 
 const getTokenFrom = request => {
     const authorization = request.get('authorization')
@@ -18,11 +19,91 @@ const getTokenFrom = request => {
 // Get all profiles
 personsRouter.get('/', async (request, response) => {
   try {
-    const persons = await Individual
+    const initialPersons = await Individual
       .find({})
-      .populate('transactionLevelOne','date', TransactionLevelOne )
-      .populate('transactionLevelTwo','date', TransactionLevelTwo )
-      .populate('transactionLevelThree','date', TransactionLevelThree )
+      .populate({
+        path: 'transactionLevelOne',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelOne,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
+      .populate({
+        path: 'transactionLevelTwo',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelTwo,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
+      .populate({
+        path: 'transactionLevelThree',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelThree,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
+
+    const persons = initialPersons.map(person => {
+      const transactions = person.transactionLevelOne.concat(
+        person.transactionLevelTwo.concat(person.transactionLevelThree)
+      )
+      return ({
+        id: person.id,
+        accountId: person.accountId,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        middleName: person.middleName,
+        suffix: person.suffix,
+        gender: person.gender,
+        birthDate: person.birthDate,
+        contactNumber: person.contactNumber,
+        email: person.email,
+        status: person.status,
+        province: person.province,
+        city: person.city,
+        barangay: person.barangay,
+        street: person.street,
+        resident: person.resident,
+        special: person.special,
+        transactions: transactions
+      })
+    })
     response.json(persons)
   } catch (error) {
     return response.status(401).json({
@@ -31,34 +112,93 @@ personsRouter.get('/', async (request, response) => {
   }
 })
 
-//Gets specific profile
+// Gets specific profile
 personsRouter.get('/:id', async (request, response) => {
   try {
     const person = await Individual
-      .findById(request.params.id)
-      .populate('transactionLevelOne', {
-        establishment: 1,
-        date: 1,
-        status: 1,
-        login: 1,
-        logout: 1
-      }, TransactionLevelOne)
-      .populate('transactionLevelTwo', {
-        establishment: 1,
-        date: 1,
-        status: 1,
-        login: 1,
-        logout: 1
-      }, TransactionLevelTwo)
-      .populate('transactionLevelThree', {
-        establishment: 1,
-        date: 1,
-        status: 1,
-        login: 1,
-        logout: 1
-      }, TransactionLevelThree)
+      .findOne({_id: request.params.id})
+      .populate({
+        path: 'transactionLevelOne',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelOne,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
+      .populate({
+        path: 'transactionLevelTwo',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelTwo,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
+      .populate({
+        path: 'transactionLevelThree',
+        select: {
+          establishment: 1,
+          date: 1,
+          status: 1,
+          login: 1,
+          logout: 1
+        },
+        model: TransactionLevelThree,
+        populate: {
+          path: 'establishment',
+          select:{
+            name: 1,
+            level: 1
+          },
+          model: Establishment
+        }
+      })
     
-    response.json(person)
+    const transactions = person.transactionLevelOne.concat(
+      person.transactionLevelTwo.concat(person.transactionLevelThree)
+    )
+    
+    response.json({
+      id: person.id,
+      accountId: person.accountId,
+      firstName: person.firstName,
+      lastName: person.lastName,
+      middleName: person.middleName,
+      suffix: person.suffix,
+      gender: person.gender,
+      birthDate: person.birthDate,
+      contactNumber: person.contactNumber,
+      email: person.email,
+      status: person.status,
+      province: person.province,
+      city: person.city,
+      barangay: person.barangay,
+      street: person.street,
+      resident: person.resident,
+      special: person.special,
+      transactions: transactions
+    })
   } catch (error) {
     return response.status(401).json({
       error: 'Failed to retrieve profile'
