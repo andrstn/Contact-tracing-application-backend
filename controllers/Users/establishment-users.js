@@ -4,11 +4,11 @@ const AdminUser = require('../../models/Users/admin-user')
 const usersEstablishmentRouter = require('express').Router()
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
-const decodeToken = require('../../utils/decodeToken')
+const decode = require('../../utils/decodeToken')
 
 // Get all establishment users
 usersEstablishmentRouter.get('/', async (request, response) => {
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const user = await AdminUser.findById(decodedToken.id)
   if (!user) {
@@ -38,7 +38,7 @@ usersEstablishmentRouter.get('/', async (request, response) => {
 usersEstablishmentRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {
@@ -114,7 +114,7 @@ usersEstablishmentRouter.post('/log-in', async (request, response) => {
 usersEstablishmentRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const user = await EstablishmentUser.findById(decodedToken)
   if (!user) {
@@ -156,7 +156,7 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
 usersEstablishmentRouter.put('/:id/change-password', async (request, response) => {
   const { username, oldPassword, newPassword } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const estab = await EstablishmentUser.findById(decodedToken)
   if (!estab) {
