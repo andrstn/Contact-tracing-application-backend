@@ -6,7 +6,6 @@ const TransactionLevelOne = require('../../../models/Transactions/transaction-le
 const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
 const Establishment = require('../../../models/Establishments/establishment')
-const { forEach } = require('lodash')
 
 const getTokenFrom = request => {
     const authorization = request.get('authorization')

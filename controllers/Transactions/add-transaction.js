@@ -1,4 +1,7 @@
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const Establishment = require('../../models/Establishments/establishment')
+const EstablishmentUser = require('../../models/Users/establishment-user')
 const Individual = require('../../models/Individuals/individual')
 const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
@@ -31,6 +34,22 @@ handler.get('/transaction-three', async (request, response) => {
 
 
 handler.post('/transactions', async (request, response) => {
+  const token = getTokenFrom(request)
+
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!token || !decodedToken) {
+    return response.status(401).json({
+      error: 'Token missing or invalid.'
+    })
+  }
+
+  const establishmentUser = await EstablishmentUser.findById(decodedToken.id)
+  if (!establishmentUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
+  }
+
     const {
         personId,
         establishmentId

@@ -3,9 +3,20 @@ const jwt = require('jsonwebtoken')
 const usersIndividualRouter = require('express').Router()
 const IndividualUser = require('../../models/Users/individual-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
+const AdminUser = require('../../models/Users/admin-user')
+const decodeToken = require('../../utils/decodeToken')
 
 // Get all individual users
 usersIndividualRouter.get('/', async (request, response) => {
+  const decodedToken = decodeToken(request)
+
+  const user = await AdminUser.findById(decodedToken)
+  if (!user) {
+    return response.status(401).json({
+      error: 'Unauthorized user.'
+    })
+  }
+
   try {
     const users = await IndividualUser
      .find({})
@@ -18,15 +29,24 @@ usersIndividualRouter.get('/', async (request, response) => {
      })
     response.json(users)
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to retrieve individual user.'
     })
    }
  })
 
  // Individual Sign-up
-  usersIndividualRouter.post('/sign-up', async (request, response) => {
+usersIndividualRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
+
+  const decodedToken = decodeToken(request)
+
+  const admin = await AdminUser.findById(decodedToken)
+  if (!admin) {
+    return response.status(401).json({
+      error: 'Unauthorized user.'
+    })
+  }
 
   const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
   if (existingEstablishmentUser) {
@@ -54,7 +74,7 @@ usersIndividualRouter.get('/', async (request, response) => {
     const savedUser = await user.save()
     response.status(201).json(savedUser)
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to create user.'
     })
   }
@@ -95,6 +115,14 @@ usersIndividualRouter.post('/log-in', async (request, response) => {
 usersIndividualRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
+  const decodedToken = decodeToken(request)
+
+  const admin = await IndividualUser.findById(decodedToken)
+  if (!admin) {
+    return response.status(401).json({
+      error: 'Unauthorized user.'
+    })
+  }
   
   const updateUser = {
     username: username
@@ -114,11 +142,16 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
     })
   }
 
-  await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Username updated.'
-  })
-
+  try {
+    await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(200).json({
+      message: 'Username updated.'
+    })
+  } catch (error) {
+    return response.status(400).json({
+      error: 'Failed to update username.'
+    })
+  }
 })
 
 // Update password
@@ -131,7 +164,7 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
       : await bcrypt.compare(oldPassword, user.passwordHash)
 
   if (!oldPasswordCorrect) {
-    return response.status(401).json({error: 'Invalid old password.'})
+    return response.status(400).json({error: 'Invalid old password.'})
   }
 
   const saltRounds = 10
@@ -142,10 +175,16 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
     passwordHash: passwordHash
   }
 
-  await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-  response.status(201).json({
-    message: 'Password updated.'
-  })
+  try {
+    await IndividualUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
+    response.status(200).json({
+      message: 'Password updated.'
+    })
+  } catch (error) {
+    return response.status(400).json({
+      error: 'Failed to update password.'
+    })
+  }
 })
 
 module.exports = usersIndividualRouter

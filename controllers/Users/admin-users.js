@@ -4,14 +4,7 @@ const usersAdminRouter = require('express').Router()
 const AdminUser = require('../../models/Users/admin-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
-
-const getTokenFrom = request => {
-  const authorization = request.get('Authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
+const decodeToken = require('../../utils/decodeToken')
 
 // Admin Sign-up
 usersAdminRouter.post('/sign-up', async (request, response) => {
@@ -19,7 +12,7 @@ usersAdminRouter.post('/sign-up', async (request, response) => {
 
   const existingUser = await AdminUser.findOne({ username })
   if (existingUser) {
-    return response.status(400).json({
+    return response.status(401).json({
       error: 'Username must be unique.'
     })
   }
@@ -36,7 +29,7 @@ usersAdminRouter.post('/sign-up', async (request, response) => {
     const savedUser = await user.save()
     response.status(201).json(savedUser)
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to create user.'
     })
   }
@@ -77,6 +70,15 @@ usersAdminRouter.post('/log-in', async (request, response) => {
 usersAdminRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
+  const decodedToken = decodeToken(request)
+
+  const user = await AdminUser.findById(decodedToken.id)
+  if (!user) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
+  }
+
   if (username.length < 8) {
     return response.status(400).json({
       error: 'Username must be atleast 8 characters.'
@@ -95,11 +97,11 @@ usersAdminRouter.put('/:id/change-username', async (request, response) => {
   }
   try {
     await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-    response.status(201).json({
+    response.status(200).json({
       message: 'Username updated.'
     })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to update username.'
     })
   }
@@ -108,6 +110,15 @@ usersAdminRouter.put('/:id/change-username', async (request, response) => {
 // Update password
 usersAdminRouter.put('/:id/change-password', async (request, response) => {
   const { username, oldPassword, newPassword } = request.body
+  
+  const decodedToken = decodeToken(request)
+
+  const establishmentUser = await EstablishmentUser.findById(decodedToken.id)
+  if (!establishmentUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
+  }
 
   const user = await AdminUser.findOne({username: username})
   const oldPasswordCorrect = user === null
@@ -115,7 +126,7 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
       : await bcrypt.compare(oldPassword, user.passwordHash)
 
   if (!oldPasswordCorrect) {
-    return response.status(401).json({error: 'Invalid old password.'})
+    return response.status(400).json({error: 'Invalid old password.'})
   }
 
   const saltRounds = 10
@@ -128,11 +139,11 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
 
   try {
     await AdminUser.findByIdAndUpdate(request.params.id, updateUser, { new: true })
-    response.status(201).json({
+    response.status(200).json({
       message: 'Password updated.'
     })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to update user password.'
     })
   }
@@ -140,14 +151,7 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
 
 // Delete Individual user
 usersAdminRouter.delete('/individual/:id', async (request, response) => {
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
-    return response.status(401).json({
-      error: 'Token missing or invalid.'
-    })
-  }
+  const decodedToken = decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {
@@ -158,11 +162,11 @@ usersAdminRouter.delete('/individual/:id', async (request, response) => {
 
   try {
     const deletedIndividual = await IndividualUser.findByIdAndDelete(request.params.id)
-  return response.status(401).json({
+  return response.status(200).json({
     message: `${deletedIndividual.username} deleted.`
   })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to delete.'
     })
   }
@@ -170,14 +174,7 @@ usersAdminRouter.delete('/individual/:id', async (request, response) => {
 
 // Delete Establishment user
 usersAdminRouter.delete('/establishment/:id', async (request, response) => {
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
-    return response.status(401).json({
-      error: 'Token missing or invalid.'
-    })
-  }
+  const decodedToken = decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {
@@ -188,11 +185,11 @@ usersAdminRouter.delete('/establishment/:id', async (request, response) => {
 
   try {
     const deletedEstablishment = await EstablishmentUser.findByIdAndDelete(request.params.id)
-  return response.status(401).json({
+    return response.status(200).json({
       message: `${deletedEstablishment.username} deleted.`
   })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to delete.'
     })
   }
