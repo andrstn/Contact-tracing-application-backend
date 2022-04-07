@@ -4,7 +4,7 @@ const usersAdminRouter = require('express').Router()
 const AdminUser = require('../../models/Users/admin-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
-const decodeToken = require('../../utils/decodeToken')
+const decode = require('../../utils/decodeToken')
 
 // Admin Sign-up
 usersAdminRouter.post('/sign-up', async (request, response) => {
@@ -70,7 +70,7 @@ usersAdminRouter.post('/log-in', async (request, response) => {
 usersAdminRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const user = await AdminUser.findById(decodedToken.id)
   if (!user) {
@@ -111,7 +111,7 @@ usersAdminRouter.put('/:id/change-username', async (request, response) => {
 usersAdminRouter.put('/:id/change-password', async (request, response) => {
   const { username, oldPassword, newPassword } = request.body
   
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const establishmentUser = await EstablishmentUser.findById(decodedToken.id)
   if (!establishmentUser) {
@@ -151,7 +151,7 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
 
 // Delete Individual user
 usersAdminRouter.delete('/individual/:id', async (request, response) => {
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {
@@ -174,7 +174,7 @@ usersAdminRouter.delete('/individual/:id', async (request, response) => {
 
 // Delete Establishment user
 usersAdminRouter.delete('/establishment/:id', async (request, response) => {
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {

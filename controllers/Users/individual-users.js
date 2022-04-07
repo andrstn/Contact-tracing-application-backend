@@ -4,11 +4,11 @@ const usersIndividualRouter = require('express').Router()
 const IndividualUser = require('../../models/Users/individual-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const AdminUser = require('../../models/Users/admin-user')
-const decodeToken = require('../../utils/decodeToken')
+const decode = require('../../utils/decodeToken')
 
 // Get all individual users
 usersIndividualRouter.get('/', async (request, response) => {
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const user = await AdminUser.findById(decodedToken)
   if (!user) {
@@ -39,7 +39,7 @@ usersIndividualRouter.get('/', async (request, response) => {
 usersIndividualRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const admin = await AdminUser.findById(decodedToken)
   if (!admin) {
@@ -115,7 +115,7 @@ usersIndividualRouter.post('/log-in', async (request, response) => {
 usersIndividualRouter.put('/:id/change-username', async (request, response) => {
   const { username } = request.body
 
-  const decodedToken = decodeToken(request)
+  const decodedToken = decode.decodeToken(request)
 
   const admin = await IndividualUser.findById(decodedToken)
   if (!admin) {
