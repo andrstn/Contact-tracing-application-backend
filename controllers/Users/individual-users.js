@@ -158,6 +158,15 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
 usersIndividualRouter.put('/:id/change-password', async (request, response) => {
   const { username, oldPassword, newPassword } = request.body
 
+  const decodedToken = decode.decodeToken(request)
+
+  const admin = await IndividualUser.findById(decodedToken)
+  if (!admin) {
+    return response.status(401).json({
+      error: 'Unauthorized user.'
+    })
+  }
+
   const user = await IndividualUser.findOne({username: username})
   const oldPasswordCorrect = user === null
       ? false

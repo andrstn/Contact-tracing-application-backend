@@ -113,7 +113,7 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
   
   const decodedToken = decode.decodeToken(request)
 
-  const establishmentUser = await EstablishmentUser.findById(decodedToken.id)
+  const establishmentUser = await AdminUser.findById(decodedToken.id)
   if (!establishmentUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'

@@ -8,12 +8,13 @@ const decode = require('../../utils/decodeToken')
 
 // Get all establishment users
 usersEstablishmentRouter.get('/', async (request, response) => {
+
   const decodedToken = decode.decodeToken(request)
 
   const user = await AdminUser.findById(decodedToken.id)
   if (!user) {
     return response.status(401).json({
-      error: 'Failed to retrieve establishment user.'
+      error: 'Unauthorized user.'
     })
   }
 
@@ -40,6 +41,7 @@ usersEstablishmentRouter.post('/sign-up', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
+  //di maka sign-up initially
   const admin = await AdminUser.findById(decodedToken.id)
   if (!admin) {
     return response.status(401).json({
