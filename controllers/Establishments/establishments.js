@@ -131,7 +131,7 @@ establishmentsRouter.get('/:id', async (request, response) => {
   } else if (eUser) {
       if (e.accountId.toString() !== eUser._id.toString()) {
         return response.status(401).json({
-          error: `Unauthorized user 2. ${e.accountId} ${eUser._id}`
+          error: 'Unauthorized establishment user.'
         })
       }
   }

@@ -115,128 +115,24 @@ personsRouter.get('/', async (request, response) => {
   }
 })
 
-// Admin collects specific profile
-personsRouter.get('/:id', async (request, response) => {
-
-  const decodedToken = decode.decodeToken(request)
-
-  const user = await AdminUser.findById(decodedToken.id)
-  if (!user) {
-    return response.status(401).json({
-        error: 'Unauthorized user.'
-      })
-  }
-  
-  try {
-    const person = await Individual
-      .findOne({_id: request.params.id})
-      .populate({
-        path: 'transactionLevelOne',
-        select: {
-          establishment: 1,
-          date: 1,
-          status: 1,
-          login: 1,
-          logout: 1
-        },
-        model: TransactionLevelOne,
-        populate: {
-          path: 'establishment',
-          select:{
-            name: 1,
-            level: 1
-          },
-          model: Establishment
-        }
-      })
-      .populate({
-        path: 'transactionLevelTwo',
-        select: {
-          establishment: 1,
-          date: 1,
-          status: 1,
-          login: 1,
-          logout: 1
-        },
-        model: TransactionLevelTwo,
-        populate: {
-          path: 'establishment',
-          select:{
-            name: 1,
-            level: 1
-          },
-          model: Establishment
-        }
-      })
-      .populate({
-        path: 'transactionLevelThree',
-        select: {
-          establishment: 1,
-          date: 1,
-          status: 1,
-          login: 1,
-          logout: 1
-        },
-        model: TransactionLevelThree,
-        populate: {
-          path: 'establishment',
-          select:{
-            name: 1,
-            level: 1
-          },
-          model: Establishment
-        }
-      })
-    
-    const transactions = person.transactionLevelOne.concat(
-      person.transactionLevelTwo.concat(person.transactionLevelThree)
-    )
-    
-    response.json({
-      id: person.id,
-      accountId: person.accountId,
-      firstName: person.firstName,
-      lastName: person.lastName,
-      middleName: person.middleName,
-      suffix: person.suffix,
-      gender: person.gender,
-      birthDate: person.birthDate,
-      contactNumber: person.contactNumber,
-      email: person.email,
-      status: person.status,
-      province: person.province,
-      city: person.city,
-      barangay: person.barangay,
-      street: person.street,
-      resident: person.resident,
-      special: person.special,
-      transactions: transactions
-    })
-  } catch (error) {
-    return response.status(401).json({
-      error: 'Failed to retrieve profile'
-    })
-  }
-})
 
 // Get own profile
 personsRouter.get('/:id', async (request, response) => {
-
-  const {personId} = request.body
   const decodedToken = decode.decodeToken(request)
 
-  const user = await AdminUser.findById(decodedToken.id)
-  if (!user) {
+  const iUser = await IndividualUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const i = await Individual.findById(request.params.id)
+  if (!iUser && !aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
-      })
-  }
-
-  const person = await Individual.findById(personId)
-  if (!person) {
-      return response.status(401).json({
-          message: 'Invalid individual ID.'
-      })
+    })
+  } else if (iUser) {
+      if (i.accountId.toString() !== iUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized individual user.'
+        })
+      }
   }
 
   try {
@@ -334,16 +230,14 @@ personsRouter.get('/:id', async (request, response) => {
 // Profile Sign-up
 personsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
-    return response.status(401).json({
-      error: 'Token missing or invalid.'
-    })
-  }
+  const decodedToken = decode.decodeToken(request)
 
   const user = await IndividualUser.findById(decodedToken.id)
+  if (!user) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
+  } 
 
   const person = new Individual({
     firstName: body.firstName,
@@ -376,58 +270,27 @@ personsRouter.post('/sign-up', async (request, response) => {
     })
   }
 })
-
-// Profile Sign-up
-personsRouter.post('/sign-up', async (request, response) => {
-  const body = request.body
-  const token = getTokenFrom(request)
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
-    return response.status(401).json({
-      error: 'Token missing or invalid.'
-    })
-  }
-
-  const user = await IndividualUser.findById(decodedToken.id)
-
-  const person = new Individual({
-    firstName: body.firstName,
-    lastName: body.lastName,
-    middleName: body.middleName,
-    suffix: body.suffix,
-    gender: body.gender,
-    birthDate: body.birthDate,
-    contactNumber: body.contactNumber,
-    email: body.email,
-    status: body.status,
-    province: body.province,
-    city: body.city,
-    barangay: body.barangay,
-    street: body.street,
-    resident: body.resident,
-    special: body.special,
-    transactionLevelOne: [],
-    transactionLevelTwo: [],
-    transactionLevelThree: [],
-    accountId: user._id
-  })
-
-  try {
-    const savedPerson = await person.save()
-      response.status(201).json(savedPerson)
-  } catch (error) {
-      return response.status(401).json({
-        error: 'Failed to complete profile.'
-    })
-  }
-})
-
 
 
 // Update profile
 personsRouter.put('/:id/update-profile', async (request, response) => {
   const body = request.body
+  const decodedToken = decode.decodeToken(request)
+
+  const eUser = await IndividualUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const e = await Individual.findById(request.params.id)
+  if (!eUser && !aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+    })
+  } else if (eUser) {
+      if (e.accountId.toString() !== eUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized individual user.'
+        })
+      }
+  }
 
   const person = {
       firstName: body.firstName,
@@ -446,9 +309,14 @@ personsRouter.put('/:id/update-profile', async (request, response) => {
       resident: body.resident,
       special: body.special,
   }
-
-  const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
-  response.status(201).json(updatedProfile)
+  try {
+    const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
+      response.status(201).json(updatedProfile)
+  } catch (error) {
+      return response.status(401).json({
+      error: 'Failed to update individual profile.'
+    })
+   }
 })
 
   module.exports = personsRouter
