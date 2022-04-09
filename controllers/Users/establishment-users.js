@@ -39,16 +39,6 @@ usersEstablishmentRouter.get('/', async (request, response) => {
 usersEstablishmentRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
 
-  const decodedToken = decode.decodeToken(request)
-
-  //di maka sign-up initially
-  const admin = await AdminUser.findById(decodedToken.id)
-  if (!admin) {
-    return response.status(401).json({
-      error: 'Unauthorized user.'
-    })
-  }
-
   const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
   if (existingEstablishmentUser) {
     return response.status(400).json({
