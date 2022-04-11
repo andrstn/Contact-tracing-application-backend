@@ -6,17 +6,21 @@ const TransactionLevelOne = require('../../../models/Transactions/transaction-le
 const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
 const Establishment = require('../../../models/Establishments/establishment')
+const decode = require('../../../utils/decodeToken')
+const AdminUser = require('../../../models/Users/admin-user')
 
-const getTokenFrom = request => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-      return authorization.substring(7)
-    }
-    return null
+//Admin display all profiles
+personsRouter.get('/', async (request, response) => {
+
+  const decodedToken = decode.decodeToken(request)
+
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
   }
 
-// Get all profiles
-personsRouter.get('/', async (request, response) => {
   try {
     const initialPersons = await Individual
       .find({})
@@ -105,14 +109,32 @@ personsRouter.get('/', async (request, response) => {
     })
     response.json(persons)
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to retrieve profiles'
     })
   }
 })
 
-// Gets specific profile
+
+// Get own profile
 personsRouter.get('/:id', async (request, response) => {
+  const decodedToken = decode.decodeToken(request)
+
+  const iUser = await IndividualUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const i = await Individual.findById(request.params.id)
+  if (!iUser && !aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+    })
+  } else if (iUser) {
+      if (i.accountId.toString() !== iUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized individual user.'
+        })
+      }
+  }
+
   try {
     const person = await Individual
       .findOne({_id: request.params.id})
@@ -199,7 +221,7 @@ personsRouter.get('/:id', async (request, response) => {
       transactions: transactions
     })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to retrieve profile'
     })
   }
@@ -208,16 +230,14 @@ personsRouter.get('/:id', async (request, response) => {
 // Profile Sign-up
 personsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
+  const decodedToken = decode.decodeToken(request)
 
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
-      error: 'Token missing or invalid.'
-    })
-  }
-
-  const user = await IndividualUser.findById(decodedToken.id)
+        error: 'Unauthorized user.'
+      })
+  } 
 
   const person = new Individual({
     firstName: body.firstName,
@@ -251,9 +271,26 @@ personsRouter.post('/sign-up', async (request, response) => {
   }
 })
 
+
 // Update profile
 personsRouter.put('/:id/update-profile', async (request, response) => {
   const body = request.body
+  const decodedToken = decode.decodeToken(request)
+
+  const iUser = await IndividualUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const i = await Individual.findById(request.params.id)
+  if (!iUser && !aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+    })
+  } else if (iUser) {
+      if (i?.accountId.toString() !== iUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized individual user.'
+        })
+      }
+  }
 
   const person = {
       firstName: body.firstName,
@@ -272,9 +309,14 @@ personsRouter.put('/:id/update-profile', async (request, response) => {
       resident: body.resident,
       special: body.special,
   }
-
-  const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
-  response.status(201).json(updatedProfile)
+  try {
+    const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
+      response.status(201).json(updatedProfile)
+  } catch (error) {
+      return response.status(401).json({
+      error: 'Failed to update individual profile.'
+    })
+   }
 })
 
   module.exports = personsRouter

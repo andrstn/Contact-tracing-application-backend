@@ -7,17 +7,21 @@ const TransactionLevelOne = require('../../models/Transactions/transaction-level
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
 const Individual = require('../../models/Individuals/individual')
+const decode = require('../../utils/decodeToken')
+const AdminUser = require('../../models/Users/admin-user')
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-      return authorization.substring(7)
-    }
-    return null
+
+// Admin displays all establishments
+establishmentsRouter.get('/', async (request, response) => {
+  const decodedToken = decode.decodeToken(request)
+
+  const user = await AdminUser.findById(decodedToken.id)
+  if (!user) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+      })
   }
 
-// Get all establishments
-establishmentsRouter.get('/', async (request, response) => {
   try {
    const initialEstablishment = await Establishment
     .find({},{
@@ -44,10 +48,8 @@ establishmentsRouter.get('/', async (request, response) => {
       populate: {
         path: 'person',
         select:{
-          
-          // $concat: [ $firstName, "" ,$lastName]
           firstName: 1,
-          lastName: 1,
+          lastName: 1
         },
         model: Individual
       }
@@ -115,8 +117,25 @@ establishmentsRouter.get('/', async (request, response) => {
    }
  })
 
- // Get specific establishment
+ // Get own establishment data
 establishmentsRouter.get('/:id', async (request, response) => {
+  const decodedToken = decode.decodeToken(request)
+
+  const eUser = await EstablishmentUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const e = await Establishment.findById(request.params.id)
+  if (!eUser && !aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+    })
+  } else if (eUser) {
+      if (e.accountId.toString() !== eUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized establishment user.'
+        })
+      }
+  }
+
   try {
    const establishment = await Establishment
     .findById(request.params.id)
@@ -133,9 +152,8 @@ establishmentsRouter.get('/:id', async (request, response) => {
       populate: {
         path: 'person',
         select:{
-          // $concat: [ $firstName, "" ,$lastName]
           firstName: 1,
-          lastName: 1,
+          lastName: 1
         },
         model: Individual
       }
@@ -204,15 +222,14 @@ establishmentsRouter.get('/:id', async (request, response) => {
 // Establishment Sign-up
 establishmentsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
-  const token = getTokenFrom(request)
-  
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken) {
+  const decodedToken = decode.decodeToken(request)
+
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
-        error: 'Token missing or invalid.'
-    })
-  }
-  const user = await EstablishmentUser.findById(decodedToken.id)
+        error: 'Unauthorized user.'
+      })
+  } 
 
   const establishment = new Establishment({
     name: body.name,
@@ -233,7 +250,7 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
       const savedPerson = await establishment.save()
         response.status(201).json(savedPerson)
     } catch (error) {
-        return response.status(401).json({
+        return response.status(200).json({
           error: 'Failed to complete establishment profile.'
       })
     }
@@ -242,6 +259,22 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
   // Update establishment
   establishmentsRouter.put('/:id/update-establishment', async (request, response) => {
   const body = request.body
+  const decodedToken = decode.decodeToken(request)
+
+  const eUser = await EstablishmentUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const e = await Establishment.findById(request.params.id)
+  if (!eUser && !aUser) {
+    return response.status(401).json({
+        error: 'Unauthorized user.'
+    })
+  } else if (eUser) {
+      if (e?.accountId.toString() !== eUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized establishment user.'
+        })
+      }
+  }
 
   const establishment = {
     name: body.name,
