@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Establishment = require('../../models/Establishments/establishment')
 const AdminUser = require('../../models/Users/admin-user')
 const usersEstablishmentRouter = require('express').Router()
 const EstablishmentUser = require('../../models/Users/establishment-user')
@@ -11,8 +12,8 @@ usersEstablishmentRouter.get('/', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const user = await AdminUser.findById(decodedToken.id)
-  if (!user) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
@@ -38,6 +39,14 @@ usersEstablishmentRouter.get('/', async (request, response) => {
 // Establishment Sign-up
 usersEstablishmentRouter.post('/sign-up', async (request, response) => {
   const { username, password } = request.body
+
+  const decodedToken = decode.decodeToken(request)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
+    return response.status(401).json({
+      error: 'Unauthorized user.'
+    })
+  }
 
   const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
   if (existingEstablishmentUser) {
@@ -108,11 +117,18 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
 
   const decodedToken = decode.decodeToken(request)
 
-  const user = await EstablishmentUser.findById(decodedToken)
-  if (!user) {
+  const eUser = await EstablishmentUser.findById(decodedToken)
+  const e = await EstablishmentUser.findById(request.params.id)
+  if (!eUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
+  } else if (eUser) {
+    if (e?._id.toString() !== eUser._id.toString()) {
+      return response.status(401).json({
+        error: 'Unauthorized establishment user.'
+      })
+    }
   }
 
   const updateUser = {
@@ -150,11 +166,18 @@ usersEstablishmentRouter.put('/:id/change-password', async (request, response) =
 
   const decodedToken = decode.decodeToken(request)
 
-  const estab = await EstablishmentUser.findById(decodedToken)
+  const eUser = await EstablishmentUser.findById(decodedToken)
+  const e = await EstablishmentUser.findById(request.params.id)
   if (!estab) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
+  } else if (eUser) {
+    if (e?._id.toString() !== eUser._id.toString()) {
+      return response.status(401).json({
+        error: 'Unauthorized establishment user.'
+      })
+    }
   }
 
   const user = await EstablishmentUser.findOne({username: username})

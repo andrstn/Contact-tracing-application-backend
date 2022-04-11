@@ -10,8 +10,8 @@ const decode = require('../../utils/decodeToken')
 usersIndividualRouter.get('/', async (request, response) => {
   const decodedToken = decode.decodeToken(request)
 
-  const user = await AdminUser.findById(decodedToken)
-  if (!user) {
+  const aUser = await AdminUser.findById(decodedToken)
+  if (!aUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
@@ -41,8 +41,8 @@ usersIndividualRouter.post('/sign-up', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const admin = await AdminUser.findById(decodedToken)
-  if (!admin) {
+  const aUser = await AdminUser.findById(decodedToken)
+  if (!aUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
@@ -117,11 +117,18 @@ usersIndividualRouter.put('/:id/change-username', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const admin = await IndividualUser.findById(decodedToken)
-  if (!admin) {
+  const iUser = await IndividualUser.findById(decodedToken)
+  const i = await IndividualUser.findById(request.params.id)
+  if (!iUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
+  } else if (iUser) {
+    if (i?._id.toString() !== iUser._id.toString()) {
+      return response.status(401).json({
+        error: 'Unauthorized individual user.'
+      })
+    }
   }
   
   const updateUser = {
@@ -160,11 +167,18 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const admin = await IndividualUser.findById(decodedToken)
-  if (!admin) {
+  const iUser = await IndividualUser.findById(decodedToken)
+  const i = await IndividualUser.findById(request.params.id)
+  if (!iUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
+  } else if (iUser) {
+    if (i?._id.toString() !== iUser._id.toString()) {
+      return response.status(401).json({
+        error: 'Unauthorized individual user.'
+      })
+    }
   }
 
   const user = await IndividualUser.findOne({username: username})

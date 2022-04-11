@@ -14,8 +14,8 @@ personsRouter.get('/', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const user = await AdminUser.findById(decodedToken.id)
-  if (!user) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
       })
@@ -109,7 +109,7 @@ personsRouter.get('/', async (request, response) => {
     })
     response.json(persons)
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to retrieve profiles'
     })
   }
@@ -221,7 +221,7 @@ personsRouter.get('/:id', async (request, response) => {
       transactions: transactions
     })
   } catch (error) {
-    return response.status(401).json({
+    return response.status(400).json({
       error: 'Failed to retrieve profile'
     })
   }
@@ -232,8 +232,8 @@ personsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
   const decodedToken = decode.decodeToken(request)
 
-  const user = await IndividualUser.findById(decodedToken.id)
-  if (!user) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
       })
@@ -277,15 +277,15 @@ personsRouter.put('/:id/update-profile', async (request, response) => {
   const body = request.body
   const decodedToken = decode.decodeToken(request)
 
-  const eUser = await IndividualUser.findById(decodedToken.id)
+  const iUser = await IndividualUser.findById(decodedToken.id)
   const aUser = await AdminUser.findById(decodedToken.id)
-  const e = await Individual.findById(request.params.id)
-  if (!eUser && !aUser) {
+  const i = await Individual.findById(request.params.id)
+  if (!iUser && !aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
     })
-  } else if (eUser) {
-      if (e.accountId.toString() !== eUser._id.toString()) {
+  } else if (iUser) {
+      if (i?.accountId.toString() !== iUser._id.toString()) {
         return response.status(401).json({
           error: 'Unauthorized individual user.'
         })

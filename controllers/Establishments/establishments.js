@@ -224,8 +224,8 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
   const decodedToken = decode.decodeToken(request)
 
-  const user = await EstablishmentUser.findById(decodedToken.id)
-  if (!user) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
       })
@@ -261,12 +261,20 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
   const body = request.body
   const decodedToken = decode.decodeToken(request)
 
-  const user = await EstablishmentUser.findById(decodedToken.id)
-  if (!user) {
+  const eUser = await EstablishmentUser.findById(decodedToken.id)
+  const aUser = await AdminUser.findById(decodedToken.id)
+  const e = await Establishment.findById(request.params.id)
+  if (!eUser && !aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
-      })
-  } 
+    })
+  } else if (eUser) {
+      if (e?.accountId.toString() !== eUser._id.toString()) {
+        return response.status(401).json({
+          error: 'Unauthorized establishment user.'
+        })
+      }
+  }
 
   const establishment = {
     name: body.name,
