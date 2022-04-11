@@ -9,12 +9,7 @@ const establishmentUserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    name: String,
-    passwordHash: String,
-    establishment: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Establishment'
-    }
+    passwordHash: String
 })
 
 establishmentUserSchema.set('toJSON', {
