@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 const { userConnection } = require('../../utils/connection')
 
 const individualUserSchema = new mongoose.Schema({
