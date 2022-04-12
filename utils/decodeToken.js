@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 
 const getTokenFrom = request => {
     const authorization = request.get('Authorization')

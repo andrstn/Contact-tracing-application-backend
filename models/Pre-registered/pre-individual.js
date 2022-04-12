@@ -9,7 +9,10 @@ const preIndividualSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    passwordHash: String,
+    passwordHash: {
+        type: String,
+        required: true
+    },
     firstName: {
         type: String,
         minlength: 2,
@@ -21,8 +24,7 @@ const preIndividualSchema = new mongoose.Schema({
         required: true
     },
     suffix: {
-        type: String,
-        minlength: 2
+        type: String
     },
     middleName: {
         type: String,
@@ -80,7 +82,6 @@ preIndividualSchema.set('toJSON', {
         delete returnedObject._id
         delete returnedObject.__v
         // the passwordHash should not be revealed
-        delete returnedObject.passwordHash
     }
 })
 
