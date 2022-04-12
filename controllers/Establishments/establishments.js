@@ -228,30 +228,59 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
   if (!aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
-      })
-  } 
+    })
+  }
 
-  const establishment = new Establishment({
-    name: body.name,
-    type: body.type,
-    level: body.level,
-    mobileNumber: body.mobileNumber,
-    hotlineNumber: body.hotlineNumber,
-    barangay: body.barangay,
-    province: body.province,
-    city: body.city,
-    street: body.street,
-    transactionLevelOne: [],
-    transactionLevelTwo: [],
-    transactionLevelThree: [],
-    accountId: user._id
-  })
+  const eUser = await EstablishmentUser.findById(body.accountId)
+  if (!eUser) {
+    return response.status(400).json({
+      error: 'Establishment account not found.'
+    })
+  }
+  let newEstablishment = []
+
+  if (body.type === 'School') {
+    newEstablishment = new Establishment({
+      accountId: body.accountId,
+      name: body.name,
+      type: body.type,
+      level: body.level,
+      mobileNumber: body.mobileNumber,
+      hotlineNumber: body.hotlineNumber,
+      barangay: body.barangay,
+      province: body.province,
+      city: body.city,
+      street: body.street,
+      transactionLevelOne: [],
+      transactionLevelTwo: [],
+      transactionLevelThree: [],
+      rooms: [],
+      teachers: []
+    })
+  } else {
+    newEstablishment = new Establishment({
+      accountId: body.accountId,
+      name: body.name,
+      type: body.type,
+      level: body.level,
+      mobileNumber: body.mobileNumber,
+      hotlineNumber: body.hotlineNumber,
+      barangay: body.barangay,
+      province: body.province,
+      city: body.city,
+      street: body.street,
+      transactionLevelOne: [],
+      transactionLevelTwo: [],
+      transactionLevelThree: []
+    })
+  }
+
   try {
-      const savedPerson = await establishment.save()
-        response.status(201).json(savedPerson)
+      const savedEstablishment = await newEstablishment.save()
+        response.status(201).json(savedEstablishment)
     } catch (error) {
         return response.status(200).json({
-          error: 'Failed to complete establishment profile.'
+          error: 'Failed to create establishment.'
       })
     }
   })
@@ -278,8 +307,8 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
 
   const establishment = {
     name: body.name,
-    type: body.type,//update?
-    level: body.level,//update?
+    type: body.type,
+    level: body.level,
     mobileNumber: body.mobileNumber,
     hotlineNumber: body.hotlineNumber,
     barangay: body.barangay,
