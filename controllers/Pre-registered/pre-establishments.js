@@ -1,4 +1,4 @@
-const prePersonRouter = require('express').Router()
+const preEstablishmentRouter = require('express').Router()
 const bcrypt = require('bcrypt')
 const decode = require('../../utils/decodeToken')
 const PreIndividual = require('../../models/Pre-registered/pre-individual')
@@ -7,8 +7,8 @@ const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
 const AdminUser = require('../../models/Users/admin-user')
 
-// Get all pre-registered persons
-prePersonRouter.get('/', async (request, response) => {
+// Get all pre-registered establishments
+preEstablishmentRouter.get('/', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
 
     const aUser = await AdminUser.findById(decodedToken.id)
@@ -19,17 +19,17 @@ prePersonRouter.get('/', async (request, response) => {
     }
 
     try {
-        const prePersons = await PreIndividual.find({})
-        return response.status(200).json(prePersons)
+        const preEstablishments = await PreEstablishment.find({})
+        return response.status(200).json(preEstablishments)
     } catch (error) {
         return response.status(400).json({
-            error: 'Failed to retrieve all pre-registered persons'
+            error: 'Failed to retrieve all pre-registered establishments'
         })
     }
 })
 
-// Get specific pre-registered person
-prePersonRouter.get('/:id', async (request, response) => {
+// Get specific pre-registered establishment
+preEstablishmentRouter.get('/:id', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
 
     const aUser = await AdminUser.findById(decodedToken.id)
@@ -40,18 +40,17 @@ prePersonRouter.get('/:id', async (request, response) => {
     }
 
     try {
-        const prePerson = await PreIndividual.findById(request.params.id)
-        return response.status(200).json(prePerson)
+        const preEstablishment = await PreEstablishment.findById(request.params.id)
+        return response.status(200).json(preEstablishment)
     } catch (error) {
         return response.status(400).json({
-            error: `Failed to retrieve pre-registered person.`
+            error: `Failed to retrieve pre-registered establishment.`
         })
     }
 })
 
-// Pre-register a person
-prePersonRouter.post('/', async (request, response) => {
-
+// Pre-register an establishment
+preEstablishmentRouter.post('/', async (request, response) => {
     const body = request.body
 
     const existingEstablishmentUser = await EstablishmentUser.findOne({ username: body.username })
@@ -85,27 +84,21 @@ prePersonRouter.post('/', async (request, response) => {
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
-    const prePerson = new PreIndividual({
+    const preEstablishment = new PreEstablishment({
         username: body.username,
         passwordHash: passwordHash,
-        firstName: body.firstName,
-        lastName: body.lastName,
-        middleName: body.middleName,
-        suffix: body.suffix,
-        gender: body.gender,
-        birthDate: body.birthDate,
-        contactNumber: body.contactNumber,
-        email: body.email,
+        name: body.name,
+        mobileNumber: body.mobileNumber,
+        hotlineNumber: body.hotlineNumber,
         province: body.province,
         city: body.city,
         barangay: body.barangay,
         street: body.street,
-        resident: body.resident
     })
 
     try {
-        const savedPrePerson = await prePerson.save()
-        response.status(201).json(savedPrePerson)
+        const savedPreEstablishment = await preEstablishment.save()
+        response.status(201).json(savedPreEstablishment)
     } catch (error) {
         return response.status(400).json({
             error: `${error}. Failed to pre-register.`
@@ -113,8 +106,8 @@ prePersonRouter.post('/', async (request, response) => {
     }
 })
 
-// Update pre-registered person
-prePersonRouter.put('/:id', async (request, response) => {
+// Update pre-registered establishment
+preEstablishmentRouter.put('/:id', async (request, response) => {
     const body = request.body
     const decodedToken = decode.decodeToken(request)
 
@@ -125,34 +118,28 @@ prePersonRouter.put('/:id', async (request, response) => {
         })
     }
 
-    const prePerson = {
-        firstName: body.firstName,
-        lastName: body.lastName,
-        middleName: body.middleName,
-        suffix: body.suffix,
-        gender: body.gender,
-        birthDate: body.birthDate,
-        contactNumber: body.contactNumber,
-        email: body.email,
+    const preEstablishment = {
+        name: body.name,
+        mobileNumber: body.mobileNumber,
+        hotlineNumber: body.hotlineNumber,
         province: body.province,
         city: body.city,
         barangay: body.barangay,
-        street: body.street,
-        resident: body.resident
+        street: body.street
     }
 
     try {
-        const updatedPrePerson = await PreIndividual.findByIdAndUpdate(request.params.id, prePerson, { new: true })
-        response.status(201).json(updatedPrePerson)
+        const updatedPreEstablishment = await PreEstablishment.findByIdAndUpdate(request.params.id, preEstablishment, { new: true })
+        response.status(201).json(updatedPreEstablishment)
     } catch (error) {
         return response.status(401).json({
-        error: 'Failed to update pre-registered person.'
-        })
+        error: 'Failed to update pre-registered establishment.'
+        }) 
     }
 })
 
-// Delete pre-registered person
-prePersonRouter.delete('/:id', async (request, response) => {
+// Delete pre-registered establishment
+preEstablishmentRouter.delete('/:id', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
 
     const aUser = await AdminUser.findById(decodedToken.id)
@@ -163,15 +150,15 @@ prePersonRouter.delete('/:id', async (request, response) => {
     }
 
     try {
-        const deletedPrePerson = await PreIndividual.findByIdAndDelete(request.params.id)
+        const deletedPreEstablishment = await PreEstablishment.findByIdAndDelete(request.params.id)
         return response.status(200).json({
-            message: `${deletedPrePerson.username} deleted`
+            message: `${deletedPreEstablishment.username} deleted`
         })
     } catch (error) {
         return response.status(400).json({
-            error: `Failed to delete pre-registered person.`
+            error: `Failed to delete pre-registered establishment.`
         })
     }
 })
 
-module.exports = prePersonRouter
+module.exports = preEstablishmentRouter
