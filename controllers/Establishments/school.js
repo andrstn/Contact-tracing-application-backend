@@ -41,7 +41,7 @@ schoolEstablishmentRouter.post('/:id', async (request, response) => {
                 })
             }
         }
-        
+
         const newRoom = new Establishment({
             name: `${establishment.name} (${body.name})`,
             type: 'Room',
@@ -62,6 +62,8 @@ schoolEstablishmentRouter.post('/:id', async (request, response) => {
         } catch (error) {
 
         }
+
+        
     } catch (error) {
 
     }

@@ -286,7 +286,7 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
   })
 
   // Update establishment
-  establishmentsRouter.put('/:id/update-establishment', async (request, response) => {
+establishmentsRouter.put('/:id/update-establishment', async (request, response) => {
   const body = request.body
   const decodedToken = decode.decodeToken(request)
 
@@ -314,7 +314,7 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
     barangay: body.barangay,
     province: body.province,
     city: body.city,
-    street: body.street,
+    street: body.street
   }
   try {
     const updatedProfile = await Establishment.findByIdAndUpdate(request.params.id, establishment, { new: true })
@@ -323,7 +323,7 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
       return response.status(401).json({
        error: 'Failed to update establishment profile.'
      })
-   }
+  }
 })
 
   
