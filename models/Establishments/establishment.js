@@ -11,20 +11,20 @@ const establishmentSchema = new mongoose.Schema({
         type: String,
         minlength: 2,
         unique: true,
-        require: true
+        required: true
     },
     type: {
         type: String,
-        require: true
+        required: true
     },
     level: {
         type: Number,
-        require: true
+        required: true
     },
     mobileNumber: {
         type: String,
         minlength: 11,
-        require: true
+        required: true
     },
     hotlineNumber: {
         type: String,
@@ -33,22 +33,22 @@ const establishmentSchema = new mongoose.Schema({
     barangay: {
         type: String,
         minlength: 2,
-        require: true
+        required: true
     },
     city: {
         type: String,
         minlength: 2,
-        require: true
+        required: true
     },
     province: {
         type: String,
         minlength: 2,
-        require: true
+        required: true
     },
     street: {
         type: String,
         minlength: 2,
-        require: true
+        required: true
     },
     transactionLevelOne: [
         {
