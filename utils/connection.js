@@ -29,10 +29,12 @@ const userConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@clus
 const transactionConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Transactions?retryWrites=true&w=majority')
 const individualConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Individuals?retryWrites=true&w=majority')
 const establishmentConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Establishments?retryWrites=true&w=majority')
+const preRegisteredConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Pre-registered?retryWrites=true&w=majority')
 
 module.exports = {
     userConnection,
     transactionConnection,
     individualConnection,
-    establishmentConnection
+    establishmentConnection,
+    preRegisteredConnection
 };

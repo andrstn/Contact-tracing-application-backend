@@ -1,12 +1,12 @@
 const personsRouter = require('express').Router()
-const Individual = require('../../../models/Individuals/individual')
 const jwt = require('jsonwebtoken')
+const decode = require('../../../utils/decodeToken')
+const Individual = require('../../../models/Individuals/individual')
 const IndividualUser = require('../../../models/Users/individual-user')
 const TransactionLevelOne = require('../../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
 const Establishment = require('../../../models/Establishments/establishment')
-const decode = require('../../../utils/decodeToken')
 const AdminUser = require('../../../models/Users/admin-user')
 
 //Admin display all profiles
@@ -110,7 +110,7 @@ personsRouter.get('/', async (request, response) => {
     response.json(persons)
   } catch (error) {
     return response.status(400).json({
-      error: 'Failed to retrieve profiles'
+      error: 'Failed to retrieve all persons'
     })
   }
 })
@@ -222,7 +222,7 @@ personsRouter.get('/:id', async (request, response) => {
     })
   } catch (error) {
     return response.status(400).json({
-      error: 'Failed to retrieve profile'
+      error: 'Failed to retrieve person.'
     })
   }
 })
@@ -319,4 +319,4 @@ personsRouter.put('/:id/update-profile', async (request, response) => {
    }
 })
 
-  module.exports = personsRouter
+module.exports = personsRouter

@@ -10,7 +10,7 @@ const decode = require('../../utils/decodeToken')
 usersIndividualRouter.get('/', async (request, response) => {
   const decodedToken = decode.decodeToken(request)
 
-  const aUser = await AdminUser.findById(decodedToken)
+  const aUser = await AdminUser.findById(decodedToken.id)
   if (!aUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
@@ -30,7 +30,7 @@ usersIndividualRouter.get('/', async (request, response) => {
     response.json(users)
   } catch (error) {
     return response.status(400).json({
-      error: 'Failed to retrieve individual user.'
+      error: 'Failed to retrieve individual users.'
     })
    }
  })
@@ -41,7 +41,7 @@ usersIndividualRouter.post('/sign-up', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const aUser = await AdminUser.findById(decodedToken)
+  const aUser = await AdminUser.findById(decodedToken.id)
   if (!aUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
@@ -75,7 +75,7 @@ usersIndividualRouter.post('/sign-up', async (request, response) => {
     response.status(201).json(savedUser)
   } catch (error) {
     return response.status(400).json({
-      error: 'Failed to create user.'
+      error: `Failed to create user.`
     })
   }
 })
