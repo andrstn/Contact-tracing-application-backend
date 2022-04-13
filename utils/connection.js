@@ -30,6 +30,7 @@ const transactionConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven
 const individualConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Individuals?retryWrites=true&w=majority')
 const establishmentConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Establishments?retryWrites=true&w=majority')
 const preRegisteredConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Pre-registered?retryWrites=true&w=majority')
+// const specialPersonConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Special-Person?retryWrites=true&w=majority')
 
 module.exports = {
     userConnection,
@@ -37,4 +38,5 @@ module.exports = {
     individualConnection,
     establishmentConnection,
     preRegisteredConnection
+    // specialPersonConnection
 };
