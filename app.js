@@ -18,6 +18,7 @@ const addTransactionRouter = require('./controllers/Transactions/add-transaction
 const personsRouter = require('./controllers/Individuals/Persons/persons')
 const establishmentsRouter = require('./controllers/Establishments/establishments')
 const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
+const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establishments')
 
 morgan.token('body', (request, response) => {
     return JSON.stringify(request.body)
@@ -43,6 +44,7 @@ app.use('/api/establishments', establishmentsRouter)
 
 // Pre-register Router
 app.use('/api/pre-register/persons', prePersonRouter)
+app.use('/api/pre-register/establishments', preEstablishmentRouter)
 
 
 app.use(middleware.unknownEndpoint)
