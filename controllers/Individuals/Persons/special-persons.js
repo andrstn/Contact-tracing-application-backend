@@ -20,12 +20,12 @@ specialPerson.post('/special-person', async (request, response) => {
             error: 'Unauthorized user.'
         })
     }
-    // const establishment = await Establishment.findById(establishmentId)
-    // if (!establishment) {
-    //     return response.status(401).json({
-    //         message: 'Invalid establishment ID.'
-    //     })
-    // }
+    const establishment = await Establishment.findById(establishmentId)
+    if (!establishment) {
+        return response.status(401).json({
+            message: 'Invalid establishment ID.'
+        })
+    }
     const person = await Individual.findById(personId)
     if (!person) {
         return response.status(401).json({
