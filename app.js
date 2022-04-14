@@ -48,7 +48,7 @@ app.use('/api/pre-register/persons', prePersonRouter)
 app.use('/api/pre-register/establishments', preEstablishmentRouter)
 
 // School Establishments Router
-app.use('/api/establishments/school', schoolEstablishmentRouterc)
+app.use('/api/establishments/school', schoolEstablishmentRouter)
 
 
 app.use(middleware.unknownEndpoint)
