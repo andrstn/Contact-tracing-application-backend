@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const config = require('../utils/config')
+require('dotenv').config()
+
 
 function makeNewConnection(uri) {
     const db = mongoose.createConnection(uri, {
@@ -25,11 +28,11 @@ function makeNewConnection(uri) {
     return db;
 }
 
-const userConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Users?retryWrites=true&w=majority')
-const transactionConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Transactions?retryWrites=true&w=majority')
-const individualConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Individuals?retryWrites=true&w=majority')
-const establishmentConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Establishments?retryWrites=true&w=majority')
-const preRegisteredConnection = makeNewConnection('mongodb+srv://sudowoodo:spelven22@cluster0.2eqnt.mongodb.net/Pre-registered?retryWrites=true&w=majority')
+const userConnection = makeNewConnection(process.env.MONGODB_USER_URI)
+const transactionConnection = makeNewConnection(process.env.MONGODB_TRANSACTION_URI)
+const individualConnection = makeNewConnection(process.env.MONGODB_INDIVIDUAL_URI)
+const establishmentConnection = makeNewConnection(process.env.MONGODB_ESTABLISHMENT_URI)
+const preRegisteredConnection = makeNewConnection(process.env.MONGODB_PREREGISTERED_URI)
 
 module.exports = {
     userConnection,
