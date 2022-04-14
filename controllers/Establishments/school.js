@@ -23,6 +23,10 @@ schoolEstablishmentRouter.post('/:id/rooms', async (request, response) => {
             error: 'Unauthorized establishment user.'
             })
         }
+    } else if (!e) {
+        return response.status(401).json({
+            error: 'Establishment not found.'
+        })
     }
 
     const existingEstablishment = await Establishment.findOne({ name: `${e.name} (${body.name})` })
@@ -100,6 +104,10 @@ schoolEstablishmentRouter.post('/:id/teachers', async (request, response) => {
             error: 'Unauthorized establishment user.'
             })
         }
+    } else if (!e) {
+        return response.status(401).json({
+            error: 'Establishment not found.'
+        })
     }
 
     const teacher = await Individual.findById(personId)
