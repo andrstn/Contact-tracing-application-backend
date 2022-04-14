@@ -33,7 +33,7 @@ handler.get('/transaction-three', async (request, response) => {
 
 
 
-handler.post('/transactions', async (request, response) => {
+handler.post('/', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
 
     const establishmentUser = await EstablishmentUser.findById(decodedToken.id)

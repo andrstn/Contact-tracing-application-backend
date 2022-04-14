@@ -1,6 +1,7 @@
 const schoolEstablishmentRouter = require('express').Router()
 const app = require('../../app')
 const Establishment = require('../../models/Establishments/establishment')
+const Individual = require('../../models/Individuals/individual')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const decode = require('../../utils/decodeToken')
 
@@ -84,7 +85,7 @@ schoolEstablishmentRouter.post('/:id/rooms', async (request, response) => {
 // Add an Inidivual/Person as teacher
 // Individual ID is passed through QR code scanning
 schoolEstablishmentRouter.post('/:id/teachers', async (request, response) => {
-    const body = request.body
+    const { personId } = request.body
     const decodedToken = decode.decodeToken(request)
 
     const eUser = await EstablishmentUser.findById(decodedToken.id)
@@ -101,13 +102,52 @@ schoolEstablishmentRouter.post('/:id/teachers', async (request, response) => {
         }
     }
 
-    const existingPerson = e.teachers.filter(teacher => teacher.toString() === body.personId.toString())
-    if (existingPerson.length > 0) {
-        
+    const teacher = await Individual.findById(personId)
+    if (!teacher) {
+        return response.status(401).json({
+            error: 'Individual not found.'
+        })
     }
 
+    const existingPerson = e.teachers.filter(teacher => teacher.toString() === body.personId.toString())
+    if (existingPerson.length > 0) {
+        return response.status(401).json({
+            error: `Teacher already added.`
+        })
+    }
+
+    // Add teacher(personId) to teachers field in the school establishment
     try {
         const establishment = await Establishment.findById(request.params.id)
+        const teachers = establishment.teachers
+        const addTeacher = teachers.push(personId)
+        const newTeachers = {
+            teachers: teachers
+        }
+        await Establishment.findByIdAndUpdate(establishment.id, newTeachers, { new: true })
+
+        // Update special field of person into true
+        try {
+            const updatePerson = {
+                special: true
+            }
+            await Individual.findByIdAndUpdate(teacher.id, updatePerson, { new: true })
+            
+            return response.status(201).json({
+                message: `Person has been added as teacher in ${establishment.name}.`
+            })
+        } catch (error) {
+            const currentEstab = await Establishment.findById(establishment.id)
+            const currentTeachers = currentEstab.teachers
+            const updatedTeachers = currentTeachers.filter(t => t.toString() !== teacher.id.toString())
+            const updateEstab = {
+                teachers: updatedTeachers
+            }
+            await Establishment.findByIdAndUpdate(establishment.id, updateEstab, { new: true })
+            return response.status(400).json({
+                error: `Failed to add teacher.`
+            })
+        }
     } catch (error) {
         return response.status(400).json({
             error: `Failed to add teacher.`
