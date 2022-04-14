@@ -67,6 +67,18 @@ const establishmentSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'TransactionLevelThree'
         }
+    ],
+    rooms: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Establishment'
+        }
+    ],
+    teachers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Individual'
+        }
     ]
 })
 

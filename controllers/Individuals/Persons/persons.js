@@ -266,7 +266,7 @@ personsRouter.post('/sign-up', async (request, response) => {
       response.status(201).json(savedPerson)
   } catch (error) {
       return response.status(401).json({
-        error: 'Failed to complete profile.'
+        error: 'Failed to create person.'
     })
   }
 })
