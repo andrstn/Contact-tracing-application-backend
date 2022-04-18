@@ -35,6 +35,8 @@ app.use('/api/users', usersRouter)
 app.use('/api/admin-users', usersAdminRouter)
 app.use('/api/establishment-users', usersEstablishmentRouter)
 app.use('/api/individual-users', usersIndividualRouter)
+app.use('/api/admins', adminsRouter)
+
 
 // Transactions Router
 app.use('/api/transactions', addTransactionRouter)
@@ -52,8 +54,6 @@ app.use('/api/pre-register/establishments', preEstablishmentRouter)
 // School Establishments Router
 app.use('/api/establishments/school', schoolEstablishmentRouter)
 
-//Admins Router
-app.use('/api/admin', adminsRouter)
 
 
 

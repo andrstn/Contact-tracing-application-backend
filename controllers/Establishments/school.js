@@ -78,7 +78,10 @@ schoolEstablishmentRouter.post('/:id/rooms', async (request, response) => {
             })
         }
 
-        
+        return response.status(201).json({
+            message: `${savedEstablishment.name} added as a room in ${establishment.name}`
+        })
+
     } catch (error) {
         return response.status(400).json({
             error: 'Failed to add room.'
