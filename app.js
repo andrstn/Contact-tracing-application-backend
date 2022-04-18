@@ -20,6 +20,8 @@ const establishmentsRouter = require('./controllers/Establishments/establishment
 const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
 const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establishments')
 const schoolEstablishmentRouter = require('./controllers/Establishments/school')
+const adminsRouter = require('./controllers/Admins/admins')
+
 
 morgan.token('body', (request, response) => {
     return JSON.stringify(request.body)
@@ -48,7 +50,11 @@ app.use('/api/pre-register/persons', prePersonRouter)
 app.use('/api/pre-register/establishments', preEstablishmentRouter)
 
 // School Establishments Router
-app.use('/api/establishments/school', schoolEstablishmentRouterc)
+app.use('/api/establishments/school', schoolEstablishmentRouter)
+
+//Admins Router
+app.use('/api/admin', adminsRouter)
+
 
 
 app.use(middleware.unknownEndpoint)

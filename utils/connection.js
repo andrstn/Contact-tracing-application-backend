@@ -33,11 +33,13 @@ const transactionConnection = makeNewConnection(process.env.MONGODB_TRANSACTION_
 const individualConnection = makeNewConnection(process.env.MONGODB_INDIVIDUAL_URI)
 const establishmentConnection = makeNewConnection(process.env.MONGODB_ESTABLISHMENT_URI)
 const preRegisteredConnection = makeNewConnection(process.env.MONGODB_PREREGISTERED_URI)
+const adminConnection = makeNewConnection(process.env.MONGODB_ADMIN_URI)
 
 module.exports = {
     userConnection,
     transactionConnection,
     individualConnection,
     establishmentConnection,
-    preRegisteredConnection
+    preRegisteredConnection,
+    adminConnection
 };
