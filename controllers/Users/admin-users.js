@@ -1,5 +1,9 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Individual = require('../../models/Individuals/individual')
+const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
+const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
+const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
 const usersAdminRouter = require('express').Router()
 const AdminUser = require('../../models/Users/admin-user')
 const EstablishmentUser = require('../../models/Users/establishment-user')
@@ -162,14 +166,34 @@ usersAdminRouter.delete('/individual/:id', async (request, response) => {
 
   try {
     const deletedIndividual = await IndividualUser.findByIdAndDelete(request.params.id)
+    await Individual.findByIdAndDelete(body.personId)
+
+    const transactionOne = await TransactionLevelOne.find({person : body.personId})
+    for (let index = 0; index < transactionOne.length; index++) {
+        await TransactionLevelOne.findByIdAndDelete(transactionOne[index].id)      
+    }
+
+    const transactionTwo = await TransactionLevelTwo.find({person : body.personId})
+    for (let index = 0; index < transactionTwo.length; index++) {
+        await TransactionLevelTwo.findByIdAndDelete(transactionTwo[index].id)      
+    }
+
+    const transactionThree = await TransactionLevelThree.find({person : body.personId})
+    for (let index = 0; index < transactionThree.length; index++) {
+        await TransactionLevelThree.findByIdAndDelete(transactionThree[index].id)      
+    }
+
   return response.status(200).json({
     message: `${deletedIndividual.username} deleted.`
+
   })
   } catch (error) {
     return response.status(400).json({
       error: 'Failed to delete.'
     })
   }
+
+
 })
 
 // Delete Establishment user
