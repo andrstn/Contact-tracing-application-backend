@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const Establishment = require('../../models/Establishments/establishment')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const Individual = require('../../models/Individuals/individual')
+const IndividualUser = require('../../models/Users/individual-user')
 const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
@@ -214,7 +215,7 @@ handler.post('/special/:id' ,async (request , response)=> {
         }
     }
 
-//Create transaction
+    //Create transaction
     try {
         const student = await Individual.findById(personId)
         const school = await Establishment.findById(establishmentId)
@@ -228,7 +229,7 @@ handler.post('/special/:id' ,async (request , response)=> {
         })
         const savedTransaction = await newTransaction.save()
         
-//Person update
+    //Person update
     try {
         const newTransactionLevelOne = student.transactionLevelOne
         const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
@@ -243,7 +244,7 @@ handler.post('/special/:id' ,async (request , response)=> {
         })
     }
 
-//Establishment update
+    //Establishment update
     try {
         const newTransactionLevelOne = school.transactionLevelOne
         const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
@@ -258,7 +259,7 @@ handler.post('/special/:id' ,async (request , response)=> {
         const newTransactionLevelOne = currentStudent.transactionLevelOne
         const removeTransaction = newTransactionLevelOne.filter(transaction => transaction.toString() !== savedTransaction.id)
         const newTransactions = {
-            transactionLevelOne: newTransactionLevelOne
+            transactionLevelOne: removeTransaction
         }
         await Individual.findByIdAndUpdate(personId , newTransactions, {new : true})
         return response.status(401).json({
