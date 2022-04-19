@@ -10,6 +10,10 @@ const transactionLevelOneSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Establishment'
       },
+    teacher:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Individual'
+    },
     date: {
         type: Date,
         required: true

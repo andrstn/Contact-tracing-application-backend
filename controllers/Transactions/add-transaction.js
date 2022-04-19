@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const Establishment = require('../../models/Establishments/establishment')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const Individual = require('../../models/Individuals/individual')
+const IndividualUser = require('../../models/Users/individual-user')
 const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
@@ -184,6 +185,94 @@ handler.post('/', async (request, response) => {
     } catch (error) {
         return response.status(400).json({
             message: 'Failed to save transaction.'
+        })
+    }
+})
+
+
+// Teacher add transactions
+handler.post('/special/:id' ,async (request , response)=> {
+    const decodedToken = decode.decodeToken(request)
+    const { personId, establishmentId } = request.body
+
+    const individualUser = await IndividualUser.findById(decodedToken.id)
+    if (!individualUser) {
+        return response.status(401).json({
+            error: 'Unauthorized user.'
+        })
+    }
+
+    const teacher = await Individual.findById(request.params.id)
+    if (!teacher) {
+        return response.status(401).json({
+            message: 'Invalid person ID.'
+        })
+    }else if(teacher){
+        if(teacher.special === false){
+            return response.status(401).json({
+                error: 'Unauthorized. Not a special user.'
+            })
+        }
+    }
+
+    //Create transaction
+    try {
+        const student = await Individual.findById(personId)
+        const school = await Establishment.findById(establishmentId)
+        const newTransaction = new TransactionLevelOne({
+            person: personId,
+            establishment: establishmentId,
+            teacher: teacher.id,
+            date: Math.round((new Date()).getTime() / 1000),
+            status: student.status,
+            login: Math.round((new Date()).getTime() / 1000)
+        })
+        const savedTransaction = await newTransaction.save()
+        
+    //Person update
+    try {
+        const newTransactionLevelOne = student.transactionLevelOne
+        const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
+        const newAttendance = {
+            transactionLevelOne: newTransactionLevelOne
+        }
+        await Individual.findByIdAndUpdate(personId , newAttendance, {new : true})
+    } catch (error) {
+        await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+        return response.status(401).json({
+            message: 'Failed to save transaction one.'
+        })
+    }
+
+    //Establishment update
+    try {
+        const newTransactionLevelOne = school.transactionLevelOne
+        const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
+        const newAttendance = {
+            transactionLevelOne: newTransactionLevelOne
+        }
+        await Establishment.findByIdAndUpdate(establishmentId , newAttendance, {new : true})
+    } catch (error) {
+
+        await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+        const currentStudent = await Individual.findById(personId)
+        const newTransactionLevelOne = currentStudent.transactionLevelOne
+        const removeTransaction = newTransactionLevelOne.filter(transaction => transaction.toString() !== savedTransaction.id)
+        const newTransactions = {
+            transactionLevelOne: removeTransaction
+        }
+        await Individual.findByIdAndUpdate(personId , newTransactions, {new : true})
+        return response.status(401).json({
+            message: 'Failed to save transaction two.'
+        })
+    }
+    return response.status(201).json({
+        message: 'Transaction saved',
+        data: savedTransaction
+    })
+    } catch (error) {
+        return response.status(401).json({
+            message: 'Failed to save transaction three.'
         })
     }
 })

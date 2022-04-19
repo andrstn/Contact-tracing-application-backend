@@ -254,7 +254,7 @@ personsRouter.post('/sign-up', async (request, response) => {
     barangay: body.barangay,
     street: body.street,
     resident: body.resident,
-    special: body.special,
+    special: body.special || false,
     transactionLevelOne: [],
     transactionLevelTwo: [],
     transactionLevelThree: [],
@@ -307,7 +307,7 @@ personsRouter.put('/:id/update-profile', async (request, response) => {
       barangay: body.barangay,
       street: body.street,
       resident: body.resident,
-      special: body.special,
+      //special: body.special,
   }
   try {
     const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
