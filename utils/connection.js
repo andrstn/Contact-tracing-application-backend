@@ -9,6 +9,14 @@ function makeNewConnection(uri) {
         useUnifiedTopology: true,
     });
 
+    let gfs;
+    
+    db.once('open', ()=> {
+        gfs= new mongoose.mongo.GridFSBucket(db.db, {
+            bucketName: 'uploads'
+        });
+    });
+
     db.on('error', function (error) {
         console.log(`MongoDB :: connection ${this.name} ${JSON.stringify(error)}`);
         db.close().catch(() => console.log(`MongoDB :: failed to close connection ${this.name}`));
@@ -33,11 +41,14 @@ const transactionConnection = makeNewConnection(process.env.MONGODB_TRANSACTION_
 const individualConnection = makeNewConnection(process.env.MONGODB_INDIVIDUAL_URI)
 const establishmentConnection = makeNewConnection(process.env.MONGODB_ESTABLISHMENT_URI)
 const preRegisteredConnection = makeNewConnection(process.env.MONGODB_PREREGISTERED_URI)
+const uploadIndividualConnection = makeNewConnection(process.env.MONGODB_UPLOAD_URI)
+
 
 module.exports = {
     userConnection,
     transactionConnection,
     individualConnection,
     establishmentConnection,
-    preRegisteredConnection
+    preRegisteredConnection,
+    uploadIndividualConnection
 };
