@@ -1,143 +1,92 @@
 const personsImageRouter = require('express').Router()
-const decode = require('../../../utils/decodeToken')
-const Individual = require('../../../models/Individuals/individual')
-const IndividualUser = require('../../../models/Users/individual-user')
-const AdminUser = require('../../../models/Users/admin-user')
+const mongoose = require('mongoose');
 const IndividualImage = require('../../../models/Individuals/individual-image')
-const { response } = require('../../../app')
-const { GridFsStorage } = require('multer-gridfs-storage')
+const multer = require('multer')
+const path = require('path')
+const {GridFsStorage} = require('multer-gridfs-storage')
+const Grid = require('gridfs-stream')
+const crypto = require('crypto');
 
 
+const mongoURI = process.env.MONGODB_UPLOAD_URI
+const conn = mongoose.createConnection(mongoURI);
 
-// Fetch a single file
-personsImageRouter.get('file/:filename',async (request, response ,next)=>{
-    const decodedToken = decode.decodeToken(request)
 
-    const iUser = await IndividualUser.findById(decodedToken.id)
-    const aUser = await AdminUser.findById(decodedToken.id)
-    const i = await Individual.findById(request.params.id)
-    if (!iUser && !aUser) {
-      return response.status(401).json({
-          error: 'Unauthorized user.'
-      })
-    } else if (iUser) {
-        if (i.accountId.toString() !== iUser._id.toString()) {
-          return response.status(401).json({
-            error: 'Unauthorized individual user.'
-          })
+let gfs;
+
+
+conn.once('open', () => {
+    // initialize stream
+    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+        bucketName: "uploads"
+    });
+});
+
+
+const storage = new GridFsStorage({
+        url: mongoURI,
+        file: (request, file) => {
+            return new Promise((resolve, reject) => {
+            //encrypt filename before storing it
+                crypto.randomBytes(16, (err, buf) => {
+                if (err) {
+                    return reject(err);
+                }
+                const filename = buf.toString('hex') + path.extname(file.originalname);
+                const fileInfo = {
+                    filename: filename,
+                    bucketName: 'uploads'
+                };
+                resolve(fileInfo);
+            });
+            });
         }
-    }
+    });
+const upload = multer({ storage })
 
-    try {
-        const image = await IndividualImage
-        .find({fileName: request.params.fileName})
-        .toArray((err, files) => {
-            if(!files[0] || files.length === 0){
-                return response.status(200).json({
-                    success: false,
-                    message: 'No files available'
-                })
-            }
-            response.status(200).json({
-                succes: true,
-                file: files[0]
+
+personsImageRouter.post('/profile', upload.single('file') , async (request, response, next)=>{
+    const body = request.body
+    const file = request.file
+        const image = new IndividualImage({
+            preRegisteredId: body.preRegisteredId,
+            caption: body.caption,
+            filename: file.filename,
+            fileId: file.id
+        })
+
+        try {
+            const savedImage = await image.save()
+                response.status(201).json(savedImage)
+        } catch (error) {
+            return response.status(401).json({
+                error: 'Failed to upload profile.'
             })
-        })
-    } catch (error) {
-        return response.status(401).json({
-            error: 'Failed retrieve file.'
-        })
-    }
-})
-
-// Get a particular image and render it
-personsImageRouter.get('file/:filename',async (request, response ,next)=>{
-    const decodedToken = decode.decodeToken(request)
-
-    const iUser = await IndividualUser.findById(decodedToken.id)
-    const aUser = await AdminUser.findById(decodedToken.id)
-    const i = await Individual.findById(request.params.id)
-    if (!iUser && !aUser) {
-      return response.status(401).json({
-          error: 'Unauthorized user.'
-      })
-    } else if (iUser) {
-        if (i.accountId.toString() !== iUser._id.toString()) {
-          return response.status(401).json({
-            error: 'Unauthorized individual user.'
-          })
+            
         }
-    }
-
-    try {
-        const image = await IndividualImage
-        .find({fileName: request.params.fileName})
-        .toArray((err, files) => {
-            if(!files[0] || files.length === 0){
-                return response.status(200).json({
-                    success: false,
-                    message: 'No files available'
-                })
-            }
-            if(files[0].contentType === 'image/jpeg'
-            ||files[0].contentType === 'image/png'
-            ||files[0].contentType === 'image/svg+xml'){
-                gfs.openDownloadStreamByName(request. params.fileName).pipe(request)
-            }else {
-                response.status(404).json({
-                    err: 'Not an image.'
-                })
-            }
-        })
-    } catch (error) {
-        return response.status(401).json({
-            error: 'Failed retrieve file.'
-        })
-    }
 })
 
-// Upload single valid id for verification
-personsImageRouter.post(upload.single('/file'), async (request, response , next)=>{
-  const body = request.body
-  const decodedToken = decode.decodeToken(request)
+personsImageRouter.get('/view/:filename',async (req, res, next) => {
+    
+    await gfs.find({ filename: req.params.filename }).toArray((err, files) => {
+        console.log(files);
+        if (!files[0]) {
+            return res.status(200).json({   
+                success: false,
+                message: 'No files available',
+            });
+        }
 
-  const iUser = await IndividualUser.findById(decodedToken.id)
-  if (!iUser) {
-    return response.status(401).json({
-        error: 'Unauthorized user.'
-      })
-  }
-
-  const existingImage = await IndividualImage.findOne({caption: body.caption})
-     if(existingImage){
-        return response.status(200).json({
-             success: false,
-            message: 'Image already exist'
-        })
-     }
-
-     const image = new IndividualImage({
-         caption: body.caption,
-         fileName: body.fileName,
-         fileId: body.fileId
-
-        })
-    try {
-        const savedImage = await image.save()
-        response.status(200).json(savedImage ,{
-            success: true,
-            image
-        })
-    } catch (error) {
-        return response.status(500).json({
-            error: 'Failed to upload file'
-        })
-    }
-})
-
-
-
-
+        if (files[0].contentType === 'image/jpeg' || files[0].contentType === 'image/png' || files[0].contentType === 'image/svg+xml') {
+            // render image to browser
+            gfs.openDownloadStreamByName(req.params.filename).pipe(res);
+        } else {
+            res.status(404).json({
+                err: 'Not an image',
+            });
+           }
+        });
+    });
 
 
 module.exports = personsImageRouter

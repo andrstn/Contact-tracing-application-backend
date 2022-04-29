@@ -1,20 +1,18 @@
 const mongoose = require('mongoose');
 const config = require('../utils/config')
 require('dotenv').config()
+const multer = require("multer");
+const Grid = require('gridfs-stream')
+const {
+    GridFsStorage
+  } = require("multer-gridfs-storage");
+   
 
 
 function makeNewConnection(uri) {
     const db = mongoose.createConnection(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-    });
-
-    let gfs;
-    
-    db.once('open', ()=> {
-        gfs= new mongoose.mongo.GridFSBucket(db.db, {
-            bucketName: 'uploads'
-        });
     });
 
     db.on('error', function (error) {

@@ -1,27 +1,28 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const { uploadIndividualConnection } = require('../../utils/connection')
 
-const individualImageSchema = new mongoose.Schema({
-  accountId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'IndividualUser'
+const individualImageSchema = new Schema({
+  preRegisteredId: {
+    type: String,
+    required: true
   },
   caption: {
       type: String,
-      minlength: 2,
-      unique: true,
       required: true
   },
-  fileName: {
+  filename: {
       type: String,
-      minlength: 2,
-      unique: true,
       required: true
   },
-  individualImg: {
-      data: Buffer,
-      contentType: String
-  }
+  fileId: {
+      required: true,
+      type: String
+  },
+  createdAt: {
+      default: Date.now(),
+      type: Date,
+  },
 })
 
 individualImageSchema.set('toJSON', {
