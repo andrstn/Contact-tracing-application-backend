@@ -79,6 +79,11 @@ const establishmentSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Individual'
         }
+    ],
+    pending: [
+        {
+            type: String
+        }
     ]
 })
 

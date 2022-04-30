@@ -178,6 +178,27 @@ handler.post('/', async (request, response) => {
             })
         }
 
+        // Add transaction to establishment pending logs
+        try {
+            const currentPending = establishment.pending
+            const newPending = currentPending.push(savedTransaction.id)
+            const updatePending = {
+                pending: currentPending
+            }
+            await Establishment.findByIdAndUpdate(establishmentId, updatePending, { new: true })
+        } catch (error) {
+            if (establishment.level === 1) {
+                await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+            } else if (establishment.level === 2) {
+                await TransactionLevelTwo.findByIdAndDelete(savedTransaction.id)
+            } else if (establishment.level === 3) {
+                await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
+            }
+            return response.status(400).json({
+                message: 'Failed to save transaction.'
+            })
+        }
+
         return response.status(201).json({
             message: 'Transaction saved.',
             data: savedTransaction
