@@ -21,6 +21,7 @@ const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
 const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establishments')
 const schoolEstablishmentRouter = require('./controllers/Establishments/school')
 const adminsRouter = require('./controllers/Admins/admins')
+const tagRouter = requre('./contorllers/Admins/tag')
 
 
 morgan.token('body', (request, response) => {
@@ -53,6 +54,9 @@ app.use('/api/pre-register/establishments', preEstablishmentRouter)
 
 // School Establishments Router
 app.use('/api/establishments/school', schoolEstablishmentRouter)
+
+// Tag Router
+app.use('/api/tag/positive', tagRouter)
 
 
 
