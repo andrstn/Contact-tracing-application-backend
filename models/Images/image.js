@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { uploadIndividualConnection } = require('../../utils/connection')
 
-const individualImageSchema = new Schema({
+const imageSchema = new Schema({
+
+  // preId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'PreIndividual'
+  // },
   preRegisteredId: {
     type: String,
     required: true
@@ -25,7 +30,7 @@ const individualImageSchema = new Schema({
   },
 })
 
-individualImageSchema.set('toJSON', {
+imageSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
@@ -33,6 +38,6 @@ individualImageSchema.set('toJSON', {
   }
 })
 
-const IndividualImage = uploadIndividualConnection.model('IndividualImage', individualImageSchema)
+const Image = uploadIndividualConnection.model('Image', imageSchema)
 
-module.exports = IndividualImage
+module.exports = Image

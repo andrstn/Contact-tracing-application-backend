@@ -6,6 +6,49 @@ const PreEstablishment = require('../../models/Pre-registered/pre-establishment'
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const IndividualUser = require('../../models/Users/individual-user')
 const AdminUser = require('../../models/Users/admin-user')
+const mongoose = require('mongoose');
+const Image = require('../../models/Images/image')
+const multer = require('multer')
+const path = require('path')
+const {GridFsStorage} = require('multer-gridfs-storage')
+const Grid = require('gridfs-stream')
+const crypto = require('crypto');
+
+const mongoURI = process.env.MONGODB_UPLOAD_URI
+const conn = mongoose.createConnection(mongoURI);
+
+
+let gfs;
+
+
+conn.once('open', () => {
+    // initialize stream
+    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+        bucketName: "uploads"
+    });
+});
+
+
+const storage = new GridFsStorage({
+        url: mongoURI,
+        file: (request, file) => {
+            return new Promise((resolve, reject) => {
+            //encrypt filename before storing it
+                crypto.randomBytes(16, (err, buf) => {
+                if (err) {
+                    return reject(err);
+                }
+                const filename = buf.toString('hex') + path.extname(file.originalname);
+                const fileInfo = {
+                    filename: filename,
+                    bucketName: 'uploads'
+                };
+                resolve(fileInfo);
+            });
+            });
+        }
+    });
+const upload = multer({ storage })
 
 // Get all pre-registered establishments
 preEstablishmentRouter.get('/', async (request, response) => {
@@ -160,5 +203,142 @@ preEstablishmentRouter.delete('/:id', async (request, response) => {
         })
     }
 })
+
+
+// Upload photo
+preEstablishmentRouter.post('/profile', upload.single('file') , async (request, response, next)=>{
+    const body = request.body
+    const file = request.file
+        const image = new Image({
+            // preId: pre-registed._id,
+            preRegisteredId: body.preRegisteredId,
+            caption: body.caption,
+            filename: file.filename,
+            fileId: file.id
+        })
+
+        try {
+            const savedImage = await image.save()
+                response.status(201).json(savedImage)
+        } catch (error) {
+            return response.status(401).json({
+                error: 'Failed to upload profile.'
+            })
+     }
+})
+
+preEstablishmentRouter.post('/multiple',upload.array('file', 3), (request, response, next) => {
+    response.status(200).json({
+        success: true,
+        message: `${request.files.length} files uploaded successfully`,
+    });
+});
+
+//GET: Fetches a particular image and render on browser
+preEstablishmentRouter.get('/view/image/:filename',async (request, response, next) => {
+    
+    await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
+        console.log(files);
+        if (!files[0]) {
+            return response.status(200).json({   
+                success: false,
+                message: 'No files available',
+            });
+        }
+
+        if (files[0].contentType === 'image/jpeg' || files[0].contentType === 'image/png' || files[0].contentType === 'image/svg+xml') {
+            // render image to browser
+            gfs.openDownloadStreamByName(request.params.filename).pipe(response);
+        } else {
+            response.status(404).json({
+                err: 'Not an image',
+            });
+        }
+    });
+});
+
+
+// GET: Fetches a particular file by filename
+preEstablishmentRouter.get('/view/image-details/:filename', async (request, response, next) => {
+
+    await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
+          if (!files[0]) {
+              return response.status(200).json({
+                  success: false,
+                  message: 'No files available',
+              });
+          }
+  
+          response.status(200).json({
+              success: true,
+              file: files[0],
+          });
+      });
+  });
+  
+        //  GET: Fetches all the files in the uploads collection
+preEstablishmentRouter.get('/view/image-details',async (request, response, next) => {
+      await gfs.find().toArray((err, files) => {
+          if (!files) {
+              return response.status(200).json({
+                  success: false,
+                  message: 'No files available'
+              });
+          }
+  
+          files.map(file => {
+              if (file.contentType === 'image/jpeg' || file.contentType === 'image/png' || file.contentType === 'image/svg') {
+                  file.isImage = true;
+              } else {
+                  file.isImage = false;
+              }
+          });
+  
+          response.status(200).json({
+              success: true,
+              files,
+          });
+      });
+  });
+  
+  
+  //  DELETE: Delete a particular file by an ID
+  preEstablishmentRouter.delete('/file/del/:id',async (request, response, next) => {
+      console.log(request.params.id);
+      await  gfs.delete(new mongoose.Types.ObjectId(request.params.id), (err, data) => {
+          if (err) {
+              return response.status(404).json({ err: err });
+          }
+  
+          response.status(200).json({
+              success: true,
+              message: `File with ID ${request.params.id} is deleted`,
+          });
+      });
+  });
+  
+  //DELETE: Delete an image from the collection
+  preEstablishmentRouter.delete('/delete/:id',async (request, response, next) => {
+      Image.findOne({ _id: request.params.id })
+          .then((image) => {
+              if (image) {
+                  Image.deleteOne({ _id: request.params.id })
+                      .then(() => {
+                          return response.status(200).json({
+                              success: true,
+                              message: `File with ID: ${request.params.id} deleted`,
+                          });
+                      })
+                      .catch(err => { return response.status(500).json(err) });
+              } else {
+                  response.status(200).json({
+                      success: false,
+                      message: `File with ID: ${request.params.id} not found`,
+                  });
+              }
+          })
+          .catch(err => response.status(500).json(err));
+  });
+
 
 module.exports = preEstablishmentRouter
