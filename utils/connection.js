@@ -40,7 +40,7 @@ const individualConnection = makeNewConnection(process.env.MONGODB_INDIVIDUAL_UR
 const establishmentConnection = makeNewConnection(process.env.MONGODB_ESTABLISHMENT_URI)
 const preRegisteredConnection = makeNewConnection(process.env.MONGODB_PREREGISTERED_URI)
 const uploadIndividualConnection = makeNewConnection(process.env.MONGODB_UPLOAD_URI)
-
+const adminConnection = makeNewConnection(process.env.MONGODB_ADMIN_URI)
 
 module.exports = {
     userConnection,
@@ -48,5 +48,6 @@ module.exports = {
     individualConnection,
     establishmentConnection,
     preRegisteredConnection,
-    uploadIndividualConnection
+    uploadIndividualConnection,
+    adminConnection
 };
