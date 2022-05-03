@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { uploadIndividualConnection } = require('../../utils/connection')
+const { uploadConnection } = require('../../utils/connection')
 
 const imageSchema = new Schema({
 
@@ -38,6 +38,6 @@ imageSchema.set('toJSON', {
   }
 })
 
-const Image = uploadIndividualConnection.model('Image', imageSchema)
+const Image = uploadConnection.model('Image', imageSchema)
 
 module.exports = Image
