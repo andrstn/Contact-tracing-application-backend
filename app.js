@@ -14,7 +14,8 @@ const usersRouter = require('./controllers/Users/users')
 const usersAdminRouter = require('./controllers/Users/admin-users')
 const usersEstablishmentRouter = require('./controllers/Users/establishment-users')
 const usersIndividualRouter = require('./controllers/Users/individual-users')
-const addTransactionRouter = require('./controllers/Transactions/add-transaction')
+const loginTransactionRouter = require('./controllers/Transactions/add-transaction')
+const logoutTransactionRouter = require('./controllers/Transactions/logout-transaction')
 const personsRouter = require('./controllers/Individuals/Persons/persons')
 const establishmentsRouter = require('./controllers/Establishments/establishments')
 const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
@@ -39,7 +40,8 @@ app.use('/api/admins', adminsRouter)
 
 
 // Transactions Router
-app.use('/api/transactions', addTransactionRouter)
+app.use('/api/transactions/login', loginTransactionRouter)
+app.use('/api/transactions/logout', logoutTransactionRouter)
 
 // Persons Router
 app.use('/api/persons', personsRouter)
