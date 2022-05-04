@@ -1,6 +1,6 @@
 const adminsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
-const decode = require('../../../utils/decodeToken')
+const decode = require('../../utils/decodeToken')
 const AdminUser = require('../../models/Users/admin-user')
 const Admin = require('../../models/Admin/admin')
 
