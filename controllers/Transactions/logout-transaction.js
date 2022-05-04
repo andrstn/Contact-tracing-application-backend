@@ -26,31 +26,28 @@ handler.put('/:id', async (request, response) => {
         })
     }
 
-    let pendings = []
+    const personPending = []
     if (establishment.level === 1) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelOne.findById(establishment.pending[index])
-            pendings.push(transaction)
+                .where('person').eq(request.params.id)
+            personPending.push(transaction)
         }
     } else if (establishment.level === 2) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelTwo.findById(establishment.pending[index])
-            pendings.push(transaction)
+                .where('person').eq(request.params.id)
+            personPending.push(transaction)
         }
     } else if (establishment.level === 3) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelThree.findById(establishment.pending[index])
-            pendings.push(transaction)
+                .where('person').eq(request.params.id)
+            personPending.push(transaction)
         }
     }
-
-    if (pendings.length === 0) {
-        return response.status(400).json({
-            error: `No pending transactions.`
-        })
-    }
     
-    const personPending = pendings.filter(pending => pending.person === request.params.id)
+    console.log(personPending);
     if (personPending.length === 0) {
         return response.status(400).json({
             error: `This person is not logged in this establishment.`
@@ -82,7 +79,7 @@ handler.put('/:id', async (request, response) => {
         const updateEstablishment = {
             pending: establishment.pending.filter(p => p !== most.id)
         }
-        const updatedEstablishment = await Establishment.findById(establishment.id, updateEstablishment, { new: true })
+        const updatedEstablishment = await Establishment.findByIdAndUpdate(establishment.id, updateEstablishment, { new: true })
         
         return response.status(201).json({
             message: `Person logged out.`,
