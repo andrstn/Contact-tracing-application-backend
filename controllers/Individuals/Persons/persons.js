@@ -264,31 +264,32 @@ personsRouter.post('/sign-up/:id', async (request, response) => {
     passwordHash: pre.passwordHash,
   })
 
-  const person = new Individual({
-    firstName: pre.firstName,
-    lastName: pre.lastName,
-    middleName: pre.middleName,
-    suffix: pre.suffix,
-    gender: pre.gender,
-    birthDate: pre.birthDate,
-    contactNumber: pre.contactNumber,
-    email: pre.email,
-    status: 'negative',
-    province: pre.province,
-    city: pre.city,
-    barangay: pre.barangay,
-    street: pre.street,
-    resident: pre.resident,
-    special: false,
-    transactionLevelOne: [],
-    transactionLevelTwo: [],
-    transactionLevelThree: [],
-    // accountId: savedUser.id,
-    // image: pre.imageId
-  })
   try {
     const savedUser = await user.save()
     try {
+      const person = new Individual({
+        accountId: savedUser.id,
+        firstName: pre.firstName,
+        lastName: pre.lastName,
+        middleName: pre.middleName,
+        suffix: pre.suffix,
+        gender: pre.gender,
+        birthDate: pre.birthDate,
+        contactNumber: pre.contactNumber,
+        email: pre.email,
+        status: 'negative',
+        province: pre.province,
+        city: pre.city,
+        barangay: pre.barangay,
+        street: pre.street,
+        resident: pre.resident,
+        special: false,
+        transactionLevelOne: [],
+        transactionLevelTwo: [],
+        transactionLevelThree: [],
+        // accountId: savedUser.id,
+        // image: pre.imageId
+      })
       const savedPerson = await person.save()
         response.status(201).json(savedPerson)
     } catch (error) {
