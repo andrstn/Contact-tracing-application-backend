@@ -3,18 +3,9 @@ const Schema = mongoose.Schema;
 const { uploadConnection } = require('../../utils/connection')
 
 const imageSchema = new Schema({
-
-  // preId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'PreIndividual'
-  // },
   preRegisteredId: {
     type: String,
     required: true
-  },
-  caption: {
-      type: String,
-      required: true
   },
   filename: {
       type: String,

@@ -95,9 +95,11 @@ prePersonRouter.get('/:id', async (request, response) => {
 })
 
 // Pre-register a person
-prePersonRouter.post('/', async (request, response) => {
+prePersonRouter.post('/profile',upload.single('file'), async (request, response) => {
 
     const body = request.body
+    const file = request.file
+
 
     const existingEstablishmentUser = await EstablishmentUser.findOne({ username: body.username })
     if (existingEstablishmentUser) {
@@ -145,12 +147,30 @@ prePersonRouter.post('/', async (request, response) => {
         city: body.city,
         barangay: body.barangay,
         street: body.street,
-        resident: body.resident
+        resident: body.resident,
     })
-
     try {
         const savedPrePerson = await prePerson.save()
-        response.status(201).json(savedPrePerson)
+            try {
+                const image = Image({
+                    preRegisteredId: savedPrePerson.id,
+                    filename: file.filename,
+                    fileId: file.id
+                })
+                const savedImage = await image.save()
+                response.status(201).json({
+                    message: ` ${body.firstName} ${body.lastName}  is now Pre-registered.`,
+                    data: {
+                        id: savedPrePerson.id,
+                        imageId: savedImage.id
+                    }
+                })
+            } catch (error) {
+                await PreIndividual.findByIdAndDelete(savedPrePerson.id)
+                return response.status(401).json({
+                     error: `Failed to upload image.Pre-registered data of ${body.username} will be deleted .`
+                })
+            }
     } catch (error) {
         return response.status(400).json({
             error: `${error}. Failed to pre-register.`
@@ -221,36 +241,22 @@ prePersonRouter.delete('/:id', async (request, response) => {
 
 /*****************/
 
-//Upload image
-prePersonRouter.post('/profile', upload.single('file') , async (request, response, next)=>{
-    const body = request.body
-    const file = request.file
-        const image = new Image({
-            // preId: pre-registed._id,
-            preRegisteredId: body.preRegisteredId,
-            caption: body.caption,
-            filename: file.filename,
-            fileId: file.id
-        })
-
-        try {
-            const savedImage = await image.save()
-                response.status(201).json(savedImage)
-        } catch (error) {
-            return response.status(401).json({
-                error: 'Failed to upload profile.'
-            })
-     }
-})
-
-
 //GET: Fetches a particular image and render on browser
-prePersonRouter.get('/view/image/:filename',async (req, res, next) => {
+prePersonRouter.get('/view/image/:filename',async (request, response, next) => {
+
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
     
-    await gfs.find({ filename: req.params.filename }).toArray((err, files) => {
+    await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
         console.log(files);
         if (!files[0]) {
-            return res.status(200).json({   
+            return response.status(200).json({   
                 success: false,
                 message: 'No files available',
             });
@@ -258,9 +264,9 @@ prePersonRouter.get('/view/image/:filename',async (req, res, next) => {
 
         if (files[0].contentType === 'image/jpeg' || files[0].contentType === 'image/png' || files[0].contentType === 'image/svg+xml') {
             // render image to browser
-            gfs.openDownloadStreamByName(req.params.filename).pipe(res);
+            gfs.openDownloadStreamByName(request.params.filename).pipe(response);
         } else {
-            res.status(404).json({
+            response.status(404).json({
                 err: 'Not an image',
             });
         }
@@ -269,17 +275,26 @@ prePersonRouter.get('/view/image/:filename',async (req, res, next) => {
 
 
 // GET: Fetches a particular file by filename
-prePersonRouter.get('/view/image-details/:filename', async (req, res, next) => {
+prePersonRouter.get('/view/image-details/:filename', async (request, response, next) => {
 
-  await gfs.find({ filename: req.params.filename }).toArray((err, files) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
+
+  await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
         if (!files[0]) {
-            return res.status(200).json({
+            return response.status(200).json({
                 success: false,
                 message: 'No files available',
             });
         }
 
-        res.status(200).json({
+        response.status(200).json({
             success: true,
             file: files[0],
         });
@@ -287,10 +302,19 @@ prePersonRouter.get('/view/image-details/:filename', async (req, res, next) => {
 });
 
       //  GET: Fetches all the files in the uploads collection
-prePersonRouter.get('/view/image-details',async (req, res, next) => {
+prePersonRouter.get('/view/image-details',async (request, response, next) => {
+
+    // const decodedToken = decode.decodeToken(request)
+
+    // const aUser = await AdminUser.findById(decodedToken.id)
+    // if (!aUser) {
+    //   return response.status(401).json({
+    //       error: 'Unauthorized user.'
+    //     })
+    // } 
     await gfs.find().toArray((err, files) => {
         if (!files) {
-            return res.status(200).json({
+            return response.status(200).json({
                 success: false,
                 message: 'No files available'
             });
@@ -304,7 +328,7 @@ prePersonRouter.get('/view/image-details',async (req, res, next) => {
             }
         });
 
-        res.status(200).json({
+        response.status(200).json({
             success: true,
             files,
         });
@@ -313,41 +337,59 @@ prePersonRouter.get('/view/image-details',async (req, res, next) => {
 
 
 //  DELETE: Delete a particular file by an ID
-prePersonRouter.delete('/file/del/:id',async (req, res, next) => {
-    console.log(req.params.id);
-    await  gfs.delete(new mongoose.Types.ObjectId(req.params.id), (err, data) => {
+prePersonRouter.delete('/file/del/:id',async (request, response, next) => {
+
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
+    console.log(request.params.id);
+    await  gfs.delete(new mongoose.Types.ObjectId(request.params.id), (err, data) => {
         if (err) {
-            return res.status(404).json({ err: err });
+            return response.status(404).json({ err: err });
         }
 
-        res.status(200).json({
+        response.status(200).json({
             success: true,
-            message: `File with ID ${req.params.id} is deleted`,
+            message: `File with ID ${request.params.id} is deleted`,
         });
     });
 });
 
 //DELETE: Delete an image from the collection
-prePersonRouter.delete('/delete/:id',async (req, res, next) => {
-    Image.findOne({ _id: req.params.id })
+prePersonRouter.delete('/delete/:id',async (request, response, next) => {
+
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
+    Image.findOne({ _id: request.params.id })
         .then((image) => {
             if (image) {
-                Image.deleteOne({ _id: req.params.id })
+                Image.deleteOne({ _id: request.params.id })
                     .then(() => {
-                        return res.status(200).json({
+                        return response.status(200).json({
                             success: true,
-                            message: `File with ID: ${req.params.id} deleted`,
+                            message: `File with ID: ${request.params.id} deleted`,
                         });
                     })
-                    .catch(err => { return res.status(500).json(err) });
+                    .catch(err => { return response.status(500).json(err) });
             } else {
-                res.status(200).json({
+                response.status(200).json({
                     success: false,
-                    message: `File with ID: ${req.params.id} not found`,
+                    message: `File with ID: ${request.params.id} not found`,
                 });
             }
         })
-        .catch(err => res.status(500).json(err));
+        .catch(err => response.status(500).json(err));
 });
 
 module.exports = prePersonRouter

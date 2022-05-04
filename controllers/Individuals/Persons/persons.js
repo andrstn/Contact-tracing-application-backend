@@ -1,4 +1,5 @@
 const personsRouter = require('express').Router()
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const decode = require('../../../utils/decodeToken')
 const Individual = require('../../../models/Individuals/individual')
@@ -8,6 +9,8 @@ const TransactionLevelTwo = require('../../../models/Transactions/transaction-le
 const TransactionLevelThree = require('../../../models/Transactions/transaction-level-3')
 const Establishment = require('../../../models/Establishments/establishment')
 const AdminUser = require('../../../models/Users/admin-user')
+const EstablishmentUser = require('../../../models/Users/establishment-user')
+const PreIndividual = require('../../../models/Pre-registered/pre-individual')
 
 //Admin display all profiles
 personsRouter.get('/', async (request, response) => {
@@ -227,9 +230,12 @@ personsRouter.get('/:id', async (request, response) => {
   }
 })
 
-// Profile Sign-up
-personsRouter.post('/sign-up', async (request, response) => {
-  const body = request.body
+//Profile Sign-up
+personsRouter.post('/sign-up/:id', async (request, response) => {
+  const { username, password } = request.body
+  // const body = request.body
+  const pre = await PreIndividual.findById(request.params.id)
+  // const img = await Image.findById(request.params.id)
   const decodedToken = decode.decodeToken(request)
 
   const aUser = await AdminUser.findById(decodedToken.id)
@@ -239,36 +245,73 @@ personsRouter.post('/sign-up', async (request, response) => {
       })
   } 
 
+  const existingEstablishmentUser = await EstablishmentUser.findOne({ username })
+  if (existingEstablishmentUser) {
+    return response.status(400).json({
+      error: 'Username must be unique.'
+    })
+  }
+
+  const existingIndividualUser = await IndividualUser.findOne({ username })
+  if (existingIndividualUser) {
+    return response.status(400).json({
+      error: 'Username must be unique.'
+    })
+  }
+
+  const user = new IndividualUser({
+    username: pre.username,
+    passwordHash: pre.passwordHash,
+  })
+
   const person = new Individual({
-    firstName: body.firstName,
-    lastName: body.lastName,
-    middleName: body.middleName,
-    suffix: body.suffix,
-    gender: body.gender,
-    birthDate: body.birthDate,
-    contactNumber: body.contactNumber,
-    email: body.email,
-    status: body.status,
-    province: body.province,
-    city: body.city,
-    barangay: body.barangay,
-    street: body.street,
-    resident: body.resident,
-    special: body.special || false,
+    firstName: pre.firstName,
+    lastName: pre.lastName,
+    middleName: pre.middleName,
+    suffix: pre.suffix,
+    gender: pre.gender,
+    birthDate: pre.birthDate,
+    contactNumber: pre.contactNumber,
+    email: pre.email,
+    status: 'negative',
+    province: pre.province,
+    city: pre.city,
+    barangay: pre.barangay,
+    street: pre.street,
+    resident: pre.resident,
+    special: false,
     transactionLevelOne: [],
     transactionLevelTwo: [],
     transactionLevelThree: [],
-    accountId: user._id
+    // accountId: savedUser.id,
+    // image: pre.imageId
   })
-
   try {
-    const savedPerson = await person.save()
-      response.status(201).json(savedPerson)
+    const savedUser = await user.save()
+    try {
+      const savedPerson = await person.save()
+        response.status(201).json(savedPerson)
+    } catch (error) {
+        return response.status(400).json({
+          error: 'Failed to create user.'
+      })
+    }
+      response.status(201).json(savedUser)
   } catch (error) {
-      return response.status(401).json({
-        error: 'Failed to create person.'
-    })
+      return response.status(400).json({
+        error: 'Failed to saved.'
+  })
   }
+  /////////////
+
+  // try {
+  //   const savedPerson = await person.save()
+  //     response.status(201).json(savedPerson)
+  // } catch (error) {
+  //     return response.status(401).json({
+  //       error: 'Failed to create person.'
+  //   })
+  // }
 })
 
 

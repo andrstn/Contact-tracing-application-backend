@@ -94,6 +94,12 @@ const individualSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'TransactionLevelThree'
     }
+   ],
+  image: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Image'
+    }
   ]
 })
 

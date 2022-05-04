@@ -45,8 +45,8 @@ const storage = new GridFsStorage({
                 };
                 resolve(fileInfo);
             });
-            });
-        }
+        });
+       }
     });
 const upload = multer({ storage })
 
@@ -141,7 +141,26 @@ preEstablishmentRouter.post('/', async (request, response) => {
 
     try {
         const savedPreEstablishment = await preEstablishment.save()
-        response.status(201).json(savedPreEstablishment)
+        try {
+            const image = Image({
+                preRegisteredId: savedPreEstablishment.id,
+                filename: file.filename,
+                fileId: file.id
+            })
+            const savedImage = await image.save()
+            response.status(201).json({
+                message: `${body.name} establishment is now Pre-registered.`,
+                data: {
+                    id: savedPreEstablishment.id,
+                    imageId: savedImage.id
+                }
+            })
+        } catch (error) {
+            await PreEstablishment.findByIdAndDelete(savedPreEstablishment.id)
+                return response.status(401).json({
+                     error: `Failed to upload image.Pre-registered data of ${body.name} will be deleted .`
+                })
+        }
     } catch (error) {
         return response.status(400).json({
             error: `${error}. Failed to pre-register.`
@@ -205,37 +224,25 @@ preEstablishmentRouter.delete('/:id', async (request, response) => {
 })
 
 
-// Upload photo
-preEstablishmentRouter.post('/profile', upload.single('file') , async (request, response, next)=>{
-    const body = request.body
-    const file = request.file
-        const image = new Image({
-            // preId: pre-registed._id,
-            preRegisteredId: body.preRegisteredId,
-            caption: body.caption,
-            filename: file.filename,
-            fileId: file.id
-        })
+/************** */
 
-        try {
-            const savedImage = await image.save()
-                response.status(201).json(savedImage)
-        } catch (error) {
-            return response.status(401).json({
-                error: 'Failed to upload profile.'
-            })
-     }
-})
-
-preEstablishmentRouter.post('/multiple',upload.array('file', 3), (request, response, next) => {
-    response.status(200).json({
-        success: true,
-        message: `${request.files.length} files uploaded successfully`,
-    });
-});
+// preEstablishmentRouter.post('/multiple',upload.array('file', 3), (request, response, next) => {
+//     response.status(200).json({
+//         success: true,
+//         message: `${request.files.length} files uploaded successfully`,
+//     });
+// });
 
 //GET: Fetches a particular image and render on browser
 preEstablishmentRouter.get('/view/image/:filename',async (request, response, next) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
     
     await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
         console.log(files);
@@ -260,6 +267,14 @@ preEstablishmentRouter.get('/view/image/:filename',async (request, response, nex
 
 // GET: Fetches a particular file by filename
 preEstablishmentRouter.get('/view/image-details/:filename', async (request, response, next) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
 
     await gfs.find({ filename: request.params.filename }).toArray((err, files) => {
           if (!files[0]) {
@@ -278,6 +293,14 @@ preEstablishmentRouter.get('/view/image-details/:filename', async (request, resp
   
         //  GET: Fetches all the files in the uploads collection
 preEstablishmentRouter.get('/view/image-details',async (request, response, next) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
       await gfs.find().toArray((err, files) => {
           if (!files) {
               return response.status(200).json({
@@ -304,6 +327,14 @@ preEstablishmentRouter.get('/view/image-details',async (request, response, next)
   
   //  DELETE: Delete a particular file by an ID
   preEstablishmentRouter.delete('/file/del/:id',async (request, response, next) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
       console.log(request.params.id);
       await  gfs.delete(new mongoose.Types.ObjectId(request.params.id), (err, data) => {
           if (err) {
@@ -319,6 +350,14 @@ preEstablishmentRouter.get('/view/image-details',async (request, response, next)
   
   //DELETE: Delete an image from the collection
   preEstablishmentRouter.delete('/delete/:id',async (request, response, next) => {
+    const decodedToken = decode.decodeToken(request)
+
+    const aUser = await AdminUser.findById(decodedToken.id)
+    if (!aUser) {
+      return response.status(401).json({
+          error: 'Unauthorized user.'
+        })
+    } 
       Image.findOne({ _id: request.params.id })
           .then((image) => {
               if (image) {
