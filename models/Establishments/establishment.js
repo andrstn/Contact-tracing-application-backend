@@ -15,6 +15,7 @@ const establishmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
+        minlength: 2,
         required: true
     },
     level: {

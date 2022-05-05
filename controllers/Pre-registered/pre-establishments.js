@@ -93,8 +93,11 @@ preEstablishmentRouter.get('/:id', async (request, response) => {
 })
 
 // Pre-register an establishment
-preEstablishmentRouter.post('/', async (request, response) => {
+preEstablishmentRouter.post('/',upload.single('file'), async (request, response) => {
+
     const body = request.body
+    const file = request.file
+
 
     const existingEstablishmentUser = await EstablishmentUser.findOne({ username: body.username })
     if (existingEstablishmentUser) {
@@ -131,6 +134,7 @@ preEstablishmentRouter.post('/', async (request, response) => {
         username: body.username,
         passwordHash: passwordHash,
         name: body.name,
+        type: body.type,
         mobileNumber: body.mobileNumber,
         hotlineNumber: body.hotlineNumber,
         province: body.province,
