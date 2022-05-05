@@ -42,7 +42,7 @@ handler.put('/:id', async (request, response) => {
             logout: 1
         })
 
-    if (!person) {
+    if (!initialPerson) {
         return response.status(401).json({
             error: 'Invalid person ID.'
         })
