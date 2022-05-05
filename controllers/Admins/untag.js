@@ -30,7 +30,7 @@ handler.put('/:id', async (request, response) => {
         }
         await Individual.findByIdAndUpdate(person.id, update, { new: true })
         return response.status(200).json({
-            message: `Untagged ${person.id} as positive`
+            message: `Untagged ${person.id} into negative.`
         })
     } catch (error) {
         return response.status(400).json({
