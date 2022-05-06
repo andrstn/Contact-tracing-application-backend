@@ -91,9 +91,13 @@ handler.put('/:id', async (request, response) => {
             entrance(login)
             exit(logout)
 
-            let inner = await TransactionLevelOne.find({ establishment: first[iFirst].establishment })
+            const inner1 = await TransactionLevelOne.find({ establishment: first[iFirst].establishment })
                 .where('login').gt(first[iFirst].login).lt(first[iFirst].logout)
+
+            const inner2 = await TransactionLevelOne.find({ establishment: first[iFirst].establishment })
                 .where('logout').gt(first[iFirst].login).lt(first[iFirst].logout)
+
+            let inner = inner1.filter(transaction => !inner2.includes(transaction)).concat(inner2)
 
             inner = inner.filter(transaction => transaction.id !== first[iFirst].id)
 
@@ -121,9 +125,13 @@ handler.put('/:id', async (request, response) => {
             entrance(login)
             exit(logout)
 
-            let inner = await TransactionLevelTwo.find({ establishment: second[iSecond].establishment })
+            const inner1 = await TransactionLevelTwo.find({ establishment: second[iSecond].establishment })
                 .where('login').gt(second[iSecond].login).lt(second[iSecond].logout)
+
+            const inner2 = await TransactionLevelTwo.find({ establishment: second[iSecond].establishment })
                 .where('logout').gt(second[iSecond].login).lt(second[iSecond].logout)
+
+            let inner = inner1.filter(transaction => !inner2.includes(transaction)).concat(inner2)
 
             inner = inner.filter(transaction => transaction.id !== second[iSecond].id)
             
@@ -151,9 +159,13 @@ handler.put('/:id', async (request, response) => {
             entrance(login)
             exit(logout)
 
-            let inner = await TransactionLevelThree.find({ establishment: third[iThird].establishment })
+            const inner1 = await TransactionLevelThree.find({ establishment: third[iThird].establishment })
                 .where('login').gt(third[iThird].login).lt(third[iThird].logout)
+
+            const inner2 = await TransactionLevelThree.find({ establishment: third[iThird].establishment })
                 .where('logout').gt(third[iThird].login).lt(third[iThird].logout)
+
+            let inner = inner1.filter(transaction => !inner2.includes(transaction)).concat(inner2)
 
             inner = inner.filter(transaction => transaction.id !== third[iThird].id)
 
