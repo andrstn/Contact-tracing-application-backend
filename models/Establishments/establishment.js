@@ -15,6 +15,7 @@ const establishmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
+        minlength: 2,
         required: true
     },
     level: {
@@ -78,6 +79,11 @@ const establishmentSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Individual'
+        }
+    ],
+    pending: [
+        {
+            type: String
         }
     ]
 })

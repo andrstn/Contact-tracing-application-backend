@@ -15,7 +15,7 @@ const transactionLevelOneSchema = new mongoose.Schema({
         ref: 'Individual'
     },
     date: {
-        type: Date,
+        type: Number,
         required: true
       },
     status: {
@@ -23,10 +23,10 @@ const transactionLevelOneSchema = new mongoose.Schema({
       required: true
     },
     login: {
-      type: Date
+      type: Number
     },
     logout: {
-      type: Date
+      type: Number
     }
 })
 

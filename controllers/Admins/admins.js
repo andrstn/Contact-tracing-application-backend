@@ -1,6 +1,6 @@
 const adminsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
-const decode = require('../../../utils/decodeToken')
+const decode = require('../../utils/decodeToken')
 const AdminUser = require('../../models/Users/admin-user')
 const Admin = require('../../models/Admin/admin')
 
@@ -22,11 +22,9 @@ adminsRouter.post('/sign-up', async (request, response) => {
     lastName: body.lastName,
     middleName: body.middleName,
     suffix: body.suffix,
-    gender: body.gender,
-    birthDate: body.birthDate,
     contactNumber: body.contactNumber,
     email: body.email,
-    accountId: user._id
+    accountId: body.accountId
   })
 
   try {
@@ -64,8 +62,6 @@ adminsRouter.put('/:id/update-profile', async (request, response) => {
       lastName: body.lastName,
       middleName: body.middleName,
       suffix: body.suffix,
-      gender: body.gender,
-      birthDate: body.birthDate,
       contactNumber: body.contactNumber,
       email: body.email,
   }
