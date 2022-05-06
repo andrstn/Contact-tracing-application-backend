@@ -20,7 +20,20 @@ handler.put('/:id', async (request, response) => {
     }
 
     const establishment = await Establishment.findById(body.establishmentId)
-    if (establishment.pending.length === 0) {
+    const person = await Individual.findById(request.params.id)
+    if (!establishment) {
+        return response.status(401).json({
+            error: 'Invalid Establishment ID.'
+        })
+    } else if (!person) {
+        return response.status(401).json({
+            error: 'Invalid Person ID.'
+        })
+    } else if (establishmentUser.id !== establishment.accountId.toString()) {
+        return response.status(401).json({
+            error: 'Unauthorized establishment user.'
+        })
+    } else if (establishment.pending.length === 0) {
         return response.status(400).json({
             error: `No pending transactions.`
         })
