@@ -10,28 +10,6 @@ const Individual = require('../../models/Individuals/individual')
 const decode = require('../../utils/decodeToken')
 const AdminUser = require('../../models/Users/admin-user')
 const PreEstablishment = require('../../models/Pre-registered/pre-establishment')
-const Image = require('../../models/Images/image')
-
-const mongoose = require('mongoose');
-const multer = require('multer')
-const path = require('path')
-const {GridFsStorage} = require('multer-gridfs-storage')
-const Grid = require('gridfs-stream')
-const crypto = require('crypto');
-
-const mongoURI = process.env.MONGODB_UPLOAD_URI
-const conn = mongoose.createConnection(mongoURI);
-
-
-let gfs;
-
-
-conn.once('open', () => {
-    // initialize stream
-    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: "uploads"
-    });
-});
 
 
 // Admin displays all establishments

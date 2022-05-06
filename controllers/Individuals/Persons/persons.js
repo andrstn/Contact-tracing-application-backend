@@ -256,7 +256,7 @@ personsRouter.post('/sign-up/:id', async (request, response) => {
         firstName: pre.firstName,
         lastName: pre.lastName,
         middleName: pre.middleName,
-        suffix: "asdf",
+        suffix: pre.suffix || "",
         gender: pre.gender,
         birthDate: pre.birthDate,
         contactNumber: pre.contactNumber,

@@ -230,13 +230,6 @@ preEstablishmentRouter.delete('/:id', async (request, response) => {
 
 /************** */
 
-// preEstablishmentRouter.post('/multiple',upload.array('file', 3), (request, response, next) => {
-//     response.status(200).json({
-//         success: true,
-//         message: `${request.files.length} files uploaded successfully`,
-//     });
-// });
-
 //GET: Fetches a particular image and render on browser
 preEstablishmentRouter.get('/view/image/:filename',async (request, response, next) => {
     const decodedToken = decode.decodeToken(request)
