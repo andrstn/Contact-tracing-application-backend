@@ -55,7 +55,7 @@ handler.put('/:id', async (request, response) => {
     const second = initialPerson.transactionLevelTwo.filter(transaction => transaction.login > start)
     const third = initialPerson.transactionLevelThree.filter(transaction => transaction.login > start)
 
-    const entrance = (login) => {
+    const entrance = async (login) => {
         for (let iLogin = 0; iLogin < login.length; iLogin++) {
             const person = await Individual.findById(login[iLogin].person)
             if (person.status !== 'positive') {
@@ -67,7 +67,7 @@ handler.put('/:id', async (request, response) => {
         }
     }
 
-    const exit = (logout) => {
+    const exit = async (logout) => {
         for (let iLogout = 0; iLogout < logout.length; iLogout++) {
             const person = await Individual.findById(logout[iLogout].person)
             const update = {

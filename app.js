@@ -30,7 +30,7 @@ const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
 const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establishments')
 const schoolEstablishmentRouter = require('./controllers/Establishments/school')
 const adminsRouter = require('./controllers/Admins/admins')
-const tagRouter = requre('./contorllers/Admins/tag')
+const tagRouter = require('./controllers/Admins/tag')
 
 
 morgan.token('body', (request, response) => {
