@@ -9,6 +9,7 @@ const TransactionLevelThree = require('../../models/Transactions/transaction-lev
 const Individual = require('../../models/Individuals/individual')
 const decode = require('../../utils/decodeToken')
 const AdminUser = require('../../models/Users/admin-user')
+const PreEstablishment = require('../../models/Pre-registered/pre-establishment')
 
 
 // Admin displays all establishments
@@ -220,9 +221,10 @@ establishmentsRouter.get('/:id', async (request, response) => {
  })
 
 // Establishment Sign-up
-establishmentsRouter.post('/sign-up', async (request, response) => {
-  const body = request.body
+establishmentsRouter.post('/sign-up/:id', async (request, response) => {
+  const pre = await PreEstablishment.findById(request.params.id)
   const decodedToken = decode.decodeToken(request)
+  const { level } = request.body
 
   const aUser = await AdminUser.findById(decodedToken.id)
   if (!aUser) {
@@ -231,59 +233,68 @@ establishmentsRouter.post('/sign-up', async (request, response) => {
     })
   }
 
-  const eUser = await EstablishmentUser.findById(body.accountId)
-  if (!eUser) {
-    return response.status(400).json({
-      error: 'Establishment account not found.'
-    })
-  }
-  let newEstablishment = []
-
-  if (body.type === 'School') {
-    newEstablishment = new Establishment({
-      accountId: body.accountId,
-      name: body.name,
-      type: body.type,
-      level: body.level,
-      mobileNumber: body.mobileNumber,
-      hotlineNumber: body.hotlineNumber,
-      barangay: body.barangay,
-      province: body.province,
-      city: body.city,
-      street: body.street,
-      transactionLevelOne: [],
-      transactionLevelTwo: [],
-      transactionLevelThree: [],
-      rooms: [],
-      teachers: []
-    })
-  } else {
-    newEstablishment = new Establishment({
-      accountId: body.accountId,
-      name: body.name,
-      type: body.type,
-      level: body.level,
-      mobileNumber: body.mobileNumber,
-      hotlineNumber: body.hotlineNumber,
-      barangay: body.barangay,
-      province: body.province,
-      city: body.city,
-      street: body.street,
-      transactionLevelOne: [],
-      transactionLevelTwo: [],
-      transactionLevelThree: []
-    })
-  }
+  const user = new EstablishmentUser({
+    username: pre.username,
+    passwordHash: pre.passwordHash,
+  })
 
   try {
-      const savedEstablishment = await newEstablishment.save()
-        response.status(201).json(savedEstablishment)
+    const savedUser = await user.save()
+    try {
+      let newEstablishment = []
+
+      if (pre.type === 'School') {
+        newEstablishment = new Establishment({
+          accountId: savedUser.id,
+          name: pre.name,
+          type: pre.type,
+          level: level,
+          mobileNumber: pre.mobileNumber,
+          hotlineNumber: pre.hotlineNumber,
+          barangay: pre.barangay,
+          province: pre.province,
+          city: pre.city,
+          street: pre.street,
+          transactionLevelOne: [],  
+          transactionLevelTwo: [],
+          transactionLevelThree: [],
+          rooms: [],
+          teachers: [],
+        })
+      } else {
+        newEstablishment = new Establishment({
+          accountId: savedUser.id,
+          name: pre.name,
+          type: pre.type,
+          level: level,
+          mobileNumber: pre.mobileNumber,
+          hotlineNumber: pre.hotlineNumber,
+          barangay: pre.barangay,
+          province: pre.province,
+          city: pre.city,
+          street: pre.street,
+          transactionLevelOne: [],
+          transactionLevelTwo: [],
+          transactionLevelThree: [],
+          // rooms: [],
+          // teachers: [],
+        })
+      }
+    const savednewEstablishment = await newEstablishment.save()
+    await PreEstablishment.findByIdAndDelete(request.params.id)
+    response.status(201).json(savednewEstablishment)
     } catch (error) {
-        return response.status(200).json({
-          error: 'Failed to create establishment.'
+      return response.status(400).json({
+        error: `Failed to create user. ${error}`
       })
     }
-  })
+    response.status(201).json(savedUser)
+  } catch (error) {
+    return response.status(400).json({
+      error: 'Failed to saved.'
+    }) 
+  }
+})
 
   // Update establishment
 establishmentsRouter.put('/:id/update-establishment', async (request, response) => {

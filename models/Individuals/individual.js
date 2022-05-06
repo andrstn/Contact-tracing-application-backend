@@ -17,8 +17,7 @@ const individualSchema = new mongoose.Schema({
     required: true
   },
   suffix: {
-    type: String,
-    minlength: 2
+    type: String
   },
   middleName: {
     type: String,
@@ -94,7 +93,7 @@ const individualSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'TransactionLevelThree'
     }
-  ]
+   ]
 })
 
 individualSchema.set('toJSON', {

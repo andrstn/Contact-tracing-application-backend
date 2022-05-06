@@ -9,6 +9,14 @@ const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 
+// const GridFs = require('./utils/gridFs')
+// const {GridFsStorage} = require('multer-gridfs-storage')
+// const multer = require('multer')
+// const Grid = require('gridfs-stream')
+
+
+
+
 // Import Routers
 const usersRouter = require('./controllers/Users/users')
 const usersAdminRouter = require('./controllers/Users/admin-users')
@@ -25,8 +33,18 @@ const adminsRouter = require('./controllers/Admins/admins')
 
 
 morgan.token('body', (request, response) => {
-    return JSON.stringify(request.body)
-})
+    return JSON.stringify(request.body) 
+})  
+
+
+
+
+// const connect = mongoose.connect(process.env.MONGODB_UPLOAD_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// // connect to the database  
+// connect.then(() => {
+//   console.log('Connected to database: GridApp');
+// }, (err) => console.log(err));
 
 app.use(express.json())
 app.use(cors())

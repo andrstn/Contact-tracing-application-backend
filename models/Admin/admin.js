@@ -26,16 +26,6 @@ const adminSchema = new mongoose.Schema({
       minlength: 2,
       required: true
     },
-    gender: {
-      type: String,
-      minlength: 2,
-      required: true
-    },
-    birthDate: {
-      type: String,
-      minlength: 2,
-      required: true
-    },
     contactNumber: {
       type: String,
       minlength: 2,

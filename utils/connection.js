@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 const config = require('../utils/config')
 require('dotenv').config()
+const multer = require("multer");
+const Grid = require('gridfs-stream')
+const {
+    GridFsStorage
+  } = require("multer-gridfs-storage");
+   
 
 
 function makeNewConnection(uri) {
@@ -33,6 +39,7 @@ const transactionConnection = makeNewConnection(process.env.MONGODB_TRANSACTION_
 const individualConnection = makeNewConnection(process.env.MONGODB_INDIVIDUAL_URI)
 const establishmentConnection = makeNewConnection(process.env.MONGODB_ESTABLISHMENT_URI)
 const preRegisteredConnection = makeNewConnection(process.env.MONGODB_PREREGISTERED_URI)
+const uploadConnection = makeNewConnection(process.env.MONGODB_UPLOAD_URI)
 const adminConnection = makeNewConnection(process.env.MONGODB_ADMIN_URI)
 
 module.exports = {
@@ -41,5 +48,6 @@ module.exports = {
     individualConnection,
     establishmentConnection,
     preRegisteredConnection,
+    uploadConnection,
     adminConnection
 };
