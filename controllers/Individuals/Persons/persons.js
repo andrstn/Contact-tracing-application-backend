@@ -274,13 +274,12 @@ personsRouter.post('/sign-up/:id', async (request, response) => {
       })
          const savedPerson = await person.save()
          await PreIndividual.findByIdAndDelete(request.params.id)
-         response.status(201).json(savedPerson)
+       return  response.status(201).json(savedPerson)
     } catch (error) {
         return response.status(400).json({
           error: 'Failed to create user.'
        })
      }
-       response.status(201).json(savedUser)
   } catch (error) {
       return response.status(400).json({
         error: 'Failed to saved.'

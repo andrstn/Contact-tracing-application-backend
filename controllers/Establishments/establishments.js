@@ -282,13 +282,12 @@ establishmentsRouter.post('/sign-up/:id', async (request, response) => {
       }
     const savednewEstablishment = await newEstablishment.save()
     await PreEstablishment.findByIdAndDelete(request.params.id)
-    response.status(201).json(savednewEstablishment)
+    return response.status(201).json(savednewEstablishment)
     } catch (error) {
       return response.status(400).json({
         error: `Failed to create user. ${error}`
       })
     }
-    response.status(201).json(savedUser)
   } catch (error) {
     return response.status(400).json({
       error: 'Failed to saved.'
