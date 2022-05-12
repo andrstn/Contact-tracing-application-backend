@@ -59,7 +59,7 @@ handler.put('/:id', async (request, response) => {
     }
     
     // 1209600 is equivalent to 14 days
-    const start = () => Math.round((new Date()).getTime() / 1000) - 1209600
+    const start = Math.round((new Date()).getTime() / 1000) - 1209600
 
     const first = initialPerson.transactionLevelOne.filter(transaction => transaction.login > start)
     const second = initialPerson.transactionLevelTwo.filter(transaction => transaction.login > start)
