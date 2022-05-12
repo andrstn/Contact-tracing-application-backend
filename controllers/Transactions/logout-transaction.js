@@ -44,19 +44,25 @@ handler.put('/:id', async (request, response) => {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelOne.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     } else if (establishment.level === 2) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelTwo.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     } else if (establishment.level === 3) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelThree.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     }
     

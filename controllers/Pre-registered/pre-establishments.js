@@ -135,6 +135,7 @@ preEstablishmentRouter.post('/',upload.single('file'), async (request, response)
         passwordHash: passwordHash,
         name: body.name,
         type: body.type,
+        // needs to be in a 12-digit format (63**********)
         mobileNumber: body.mobileNumber,
         hotlineNumber: body.hotlineNumber,
         province: body.province,

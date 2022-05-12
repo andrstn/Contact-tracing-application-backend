@@ -36,7 +36,7 @@ const individualSchema = new mongoose.Schema({
   },
   contactNumber: {
     type: String,
-    minlength: 2,
+    minlength: 12,
     required: true
   },
   email: {

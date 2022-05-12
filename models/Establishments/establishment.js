@@ -24,7 +24,7 @@ const establishmentSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        minlength: 11,
+        minlength: 12,
         required: true
     },
     hotlineNumber: {
