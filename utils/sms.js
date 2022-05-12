@@ -5,6 +5,7 @@ require('dotenv').config()
 
 const apiKey = process.env.VONAGE_API_KEY
 const apiSecret = process.env.VONAGE_API_SECRET
+const brandName = process.env.VONAGE_BRAND_NAME
 // const number = process.env.VONAGE_NUMBER
 
 
@@ -16,7 +17,7 @@ const vonage = new Vonage({
 })
  function sendTextMessage(messages, number){
 
-    const from = "Vonage APIs"
+    const from = brandName
     const to = number
     const text = messages
 
