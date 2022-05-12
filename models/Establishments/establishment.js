@@ -15,6 +15,7 @@ const establishmentSchema = new mongoose.Schema({
     },
     type: {
         type: String,
+        minlength: 2,
         required: true
     },
     level: {
@@ -23,7 +24,7 @@ const establishmentSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        minlength: 11,
+        minlength: 12,
         required: true
     },
     hotlineNumber: {
@@ -78,6 +79,11 @@ const establishmentSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Individual'
+        }
+    ],
+    pending: [
+        {
+            type: String
         }
     ]
 })

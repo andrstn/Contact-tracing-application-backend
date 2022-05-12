@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Establishment = require('../../models/Establishments/establishment')
 const Individual = require('../../models/Individuals/individual')
 const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
@@ -206,9 +207,13 @@ usersAdminRouter.delete('/establishment/:id', async (request, response) => {
       error: 'Unauthorized user for the action.'
     })
   }
+  const establishmentDetails = await Establishment.find({accountId: request.params.id})
 
   try {
     const deletedEstablishment = await EstablishmentUser.findByIdAndDelete(request.params.id)
+    if (deletedEstablishment=== establishmentDetails) {
+      await establishmentDetails.findByIdAndDelete(request.params.id)
+    }
     return response.status(200).json({
       message: `${deletedEstablishment.username} deleted.`
   })

@@ -8,24 +8,45 @@ const morgan = require('morgan')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
+const sms = require('./utils/sms')
+
+// const GridFs = require('./utils/gridFs')
+// const {GridFsStorage} = require('multer-gridfs-storage')
+// const multer = require('multer')
+// const Grid = require('gridfs-stream')
+
+
+
 
 // Import Routers
 const usersRouter = require('./controllers/Users/users')
 const usersAdminRouter = require('./controllers/Users/admin-users')
 const usersEstablishmentRouter = require('./controllers/Users/establishment-users')
 const usersIndividualRouter = require('./controllers/Users/individual-users')
-const addTransactionRouter = require('./controllers/Transactions/add-transaction')
+const loginTransactionRouter = require('./controllers/Transactions/add-transaction')
+const logoutTransactionRouter = require('./controllers/Transactions/logout-transaction')
 const personsRouter = require('./controllers/Individuals/Persons/persons')
 const establishmentsRouter = require('./controllers/Establishments/establishments')
 const prePersonRouter = require('./controllers/Pre-registered/pre-individuals')
 const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establishments')
 const schoolEstablishmentRouter = require('./controllers/Establishments/school')
 const adminsRouter = require('./controllers/Admins/admins')
+const tagRouter = require('./controllers/Admins/tag')
 
 
 morgan.token('body', (request, response) => {
-    return JSON.stringify(request.body)
-})
+    return JSON.stringify(request.body) 
+})  
+
+
+
+
+// const connect = mongoose.connect(process.env.MONGODB_UPLOAD_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// // connect to the database  
+// connect.then(() => {
+//   console.log('Connected to database: GridApp');
+// }, (err) => console.log(err));
 
 app.use(express.json())
 app.use(cors())
@@ -39,7 +60,8 @@ app.use('/api/admins', adminsRouter)
 
 
 // Transactions Router
-app.use('/api/transactions', addTransactionRouter)
+app.use('/api/transactions/login', loginTransactionRouter)
+app.use('/api/transactions/logout', logoutTransactionRouter)
 
 // Persons Router
 app.use('/api/persons', personsRouter)
@@ -53,6 +75,9 @@ app.use('/api/pre-register/establishments', preEstablishmentRouter)
 
 // School Establishments Router
 app.use('/api/establishments/school', schoolEstablishmentRouter)
+
+// Tag Router
+app.use('/api/tag/positive', tagRouter)
 
 
 
