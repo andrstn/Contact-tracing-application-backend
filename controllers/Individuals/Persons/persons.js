@@ -12,6 +12,7 @@ const AdminUser = require('../../../models/Users/admin-user')
 const EstablishmentUser = require('../../../models/Users/establishment-user')
 const PreIndividual = require('../../../models/Pre-registered/pre-individual')
 const Image = require('../../../models/Images/image')
+const { sendTextMessage } = require('../../../utils/sms')
 
 //Admin display all profiles
 personsRouter.get('/', async (request, response) => {
@@ -274,7 +275,10 @@ personsRouter.post('/sign-up/:id', async (request, response) => {
       })
          const savedPerson = await person.save()
          await PreIndividual.findByIdAndDelete(request.params.id)
-       return  response.status(201).json(savedPerson)
+         const messages =  `Hi ${savedPerson.firstName}, your account is verified! `
+         const number = savedPerson.contactNumber
+         sendTextMessage(messages, number)
+        return response.status(201).json(savedPerson)
     } catch (error) {
         return response.status(400).json({
           error: 'Failed to create user.'
