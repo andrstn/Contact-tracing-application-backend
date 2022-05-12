@@ -141,6 +141,7 @@ prePersonRouter.post('/profile',upload.single('file'), async (request, response)
         suffix: body.suffix,
         gender: body.gender,
         birthDate: body.birthDate,
+        // needs to be in a 12-digit format (63**********)
         contactNumber: body.contactNumber,
         email: body.email,
         province: body.province,
