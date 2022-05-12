@@ -32,6 +32,7 @@ const preEstablishmentRouter = require('./controllers/Pre-registered/pre-establi
 const schoolEstablishmentRouter = require('./controllers/Establishments/school')
 const adminsRouter = require('./controllers/Admins/admins')
 const tagRouter = require('./controllers/Admins/tag')
+const untagRouter = require('./controllers/Admins/untag')
 
 
 morgan.token('body', (request, response) => {
@@ -78,9 +79,7 @@ app.use('/api/establishments/school', schoolEstablishmentRouter)
 
 // Tag Router
 app.use('/api/tag/positive', tagRouter)
-
-
-
+app.use('/api/tag/negative', untagRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
