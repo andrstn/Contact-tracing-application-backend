@@ -1,10 +1,11 @@
+const handler = require('express').Router()
 const Individual = require('../../models/Individuals/individual')
 const TransactionLevelOne = require('../../models/Transactions/transaction-level-1')
 const TransactionLevelTwo = require('../../models/Transactions/transaction-level-2')
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3')
 const AdminUser = require('../../models/Users/admin-user')
 const decode = require('../../utils/decodeToken')
-const handler = require('express').Router()
+
 
 handler.put('/:id', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
@@ -17,31 +18,40 @@ handler.put('/:id', async (request, response) => {
     }
 
     const initialPerson = await Individual.findById(request.params.id)
-        .populate('transactionLevelOne', {
+        .populate({
+            path: 'transactionLevelOne',
+            select: {
             establishment: 1,
-            person: 1,
             date: 1,
             status: 1,
             login: 1,
             logout: 1
+            },
+            model: TransactionLevelOne
         })
-        .populate('transactionLevelTwo', {
+        .populate({
+            path: 'transactionLevelTwo',
+            select: {
             establishment: 1,
-            person: 1,
             date: 1,
             status: 1,
             login: 1,
             logout: 1
+            },
+            model: TransactionLevelTwo
         })
-        .populate('transactionLevelThree', {
+        .populate({
+            path: 'transactionLevelThree',
+            select: {
             establishment: 1,
-            person: 1,
             date: 1,
             status: 1,
             login: 1,
             logout: 1
+            },
+            model: TransactionLevelThree
         })
-
+       
     if (!initialPerson) {
         return response.status(401).json({
             error: 'Invalid person ID.'
