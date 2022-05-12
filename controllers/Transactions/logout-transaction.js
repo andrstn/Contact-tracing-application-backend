@@ -20,7 +20,20 @@ handler.put('/:id', async (request, response) => {
     }
 
     const establishment = await Establishment.findById(body.establishmentId)
-    if (establishment.pending.length === 0) {
+    const person = await Individual.findById(request.params.id)
+    if (!establishment) {
+        return response.status(401).json({
+            error: 'Invalid Establishment ID.'
+        })
+    } else if (!person) {
+        return response.status(401).json({
+            error: 'Invalid Person ID.'
+        })
+    } else if (establishmentUser.id !== establishment.accountId.toString()) {
+        return response.status(401).json({
+            error: 'Unauthorized establishment user.'
+        })
+    } else if (establishment.pending.length === 0) {
         return response.status(400).json({
             error: `No pending transactions.`
         })
@@ -31,19 +44,25 @@ handler.put('/:id', async (request, response) => {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelOne.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     } else if (establishment.level === 2) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelTwo.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     } else if (establishment.level === 3) {
         for (let index = 0; index < establishment.pending.length; index++) {
             const transaction = await TransactionLevelThree.findById(establishment.pending[index])
                 .where('person').eq(request.params.id)
-            personPending.push(transaction)
+            if (transaction) {
+                personPending.push(transaction)
+            }
         }
     }
     

@@ -55,10 +55,14 @@ handler.post('/', async (request, response) => {
             message: 'Invalid person ID.'
         })
     }
-    const establishment = await Establishment.findById(establishmentId)
+    const establishment = await Establishment.findById(establishmentId);
     if (!establishment) {
         return response.status(401).json({
             message: 'Invalid establishment ID.'
+        })
+    } else if (establishment.accountId.toString() !== establishmentUser.id) {
+        return response.status(401).json({
+            message: 'Unauthorized establishment user.'
         })
     }
 
