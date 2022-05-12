@@ -10,6 +10,7 @@ const Individual = require('../../models/Individuals/individual')
 const decode = require('../../utils/decodeToken')
 const AdminUser = require('../../models/Users/admin-user')
 const PreEstablishment = require('../../models/Pre-registered/pre-establishment')
+const { sendTextMessage } = require('../../utils/sms')
 
 
 // Admin displays all establishments
@@ -280,8 +281,11 @@ establishmentsRouter.post('/sign-up/:id', async (request, response) => {
           // teachers: [],
         })
       }
-    const savednewEstablishment = await newEstablishment.save()
-    await PreEstablishment.findByIdAndDelete(request.params.id)
+        const savednewEstablishment = await newEstablishment.save()
+        await PreEstablishment.findByIdAndDelete(request.params.id)
+        const messages = `Hey ${savednewEstablishment.name}, this account is verified!.This establishment is labeled as Level ${savednewEstablishment.level} `
+        const number = savednewEstablishment.mobileNumber
+        sendTextMessage(messages, number)
     return response.status(201).json(savednewEstablishment)
     } catch (error) {
       return response.status(400).json({
