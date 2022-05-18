@@ -120,7 +120,7 @@ schoolEstablishmentRouter.post('/:id/teachers', async (request, response) => {
         })
     }
 
-    const existingPerson = e.teachers.filter(teacher => teacher.toString() === body.personId.toString())
+    const existingPerson = e.teachers.filter(teacher => teacher.toString() === personId.toString())
     if (existingPerson.length > 0) {
         return response.status(401).json({
             error: `Teacher already added.`
