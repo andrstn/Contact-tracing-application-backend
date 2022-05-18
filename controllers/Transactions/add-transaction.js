@@ -244,7 +244,7 @@ handler.post('/special/:id' ,async (request , response)=> {
     try {
         const student = await Individual.findById(personId)
         const school = await Establishment.findById(establishmentId)
-        const newTransaction = new TransactionLevelOne({
+        const newTransaction = new TransactionLevelThree({
             person: personId,
             establishment: establishmentId,
             teacher: teacher.id,
@@ -256,14 +256,14 @@ handler.post('/special/:id' ,async (request , response)=> {
         
     //Person update
     try {
-        const newTransactionLevelOne = student.transactionLevelOne
-        const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
+        const newTransactionLevelThree = student.transactionLevelThree
+        const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
         const newAttendance = {
-            transactionLevelOne: newTransactionLevelOne
+            transactionLevelThree: newTransactionLevelThree
         }
         await Individual.findByIdAndUpdate(personId , newAttendance, {new : true})
     } catch (error) {
-        await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+        await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
         return response.status(401).json({
             message: 'Failed to save transaction one.'
         })
@@ -271,20 +271,20 @@ handler.post('/special/:id' ,async (request , response)=> {
 
     //Establishment update
     try {
-        const newTransactionLevelOne = school.transactionLevelOne
-        const addTransaction = newTransactionLevelOne.push(savedTransaction.id)
+        const newTransactionLevelThree = school.transactionLevelThree
+        const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
         const newAttendance = {
-            transactionLevelOne: newTransactionLevelOne
+            transactionLevelThree: newTransactionLevelThree
         }
         await Establishment.findByIdAndUpdate(establishmentId , newAttendance, {new : true})
     } catch (error) {
 
-        await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+        await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
         const currentStudent = await Individual.findById(personId)
-        const newTransactionLevelOne = currentStudent.transactionLevelOne
-        const removeTransaction = newTransactionLevelOne.filter(transaction => transaction.toString() !== savedTransaction.id)
+        const newTransactionLevelThree = currentStudent.transactionLevelThree
+        const removeTransaction = newTransactionLevelThree.filter(transaction => transaction.toString() !== savedTransaction.id)
         const newTransactions = {
-            transactionLevelOne: removeTransaction
+            transactionLevelThree: removeTransaction
         }
         await Individual.findByIdAndUpdate(personId , newTransactions, {new : true})
         return response.status(401).json({

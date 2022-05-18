@@ -5,7 +5,7 @@ const Individual = require('../../models/Individuals/individual')
 const EstablishmentUser = require('../../models/Users/establishment-user')
 const decode = require('../../utils/decodeToken')
 
-// Add a level-1 establishment via establishment (school)
+// Add a level-3 establishment via establishment (school)
 // A non-school establishment cannot add one
 schoolEstablishmentRouter.post('/:id/rooms', async (request, response) => {
     const body = request.body
@@ -51,14 +51,14 @@ schoolEstablishmentRouter.post('/:id/rooms', async (request, response) => {
         const newRoom = new Establishment({
             name: `${establishment.name} (${body.name})`,
             type: 'Room',
-            level: 1,
+            level: 3,
             mobileNumber: establishment.mobileNumber,
             hotlineNumber: establishment.hotlineNumber,
             barangay: establishment.barangay,
             city: establishment.city,
             province: establishment.province,
             street: establishment.street,
-            transactionLevelOne: []
+            transactionLevelThree: []
         })
 
         const savedEstablishment = await newRoom.save()
