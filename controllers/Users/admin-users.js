@@ -118,14 +118,19 @@ usersAdminRouter.put('/:id/change-password', async (request, response) => {
   
   const decodedToken = decode.decodeToken(request)
 
-  const establishmentUser = await AdminUser.findById(decodedToken.id)
-  if (!establishmentUser) {
+  const aUser = await AdminUser.findById(decodedToken.id)
+  if (!aUser) {
     return response.status(401).json({
         error: 'Unauthorized user.'
       })
   }
 
   const user = await AdminUser.findOne({username: username})
+  if (!user) {
+    return response.status(401).json({
+        error: 'Username not exist.'
+      })
+  }
   const oldPasswordCorrect = user === null
       ? false
       : await bcrypt.compare(oldPassword, user.passwordHash)
