@@ -117,7 +117,7 @@ usersEstablishmentRouter.put('/:id/change-username', async (request, response) =
 
   const decodedToken = decode.decodeToken(request)
 
-  const eUser = await EstablishmentUser.findById(decodedToken)
+  const eUser = await EstablishmentUser.findById(decodedToken.id)
   const e = await EstablishmentUser.findById(request.params.id)
   if (!eUser) {
     return response.status(401).json({
