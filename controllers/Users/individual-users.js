@@ -167,7 +167,7 @@ usersIndividualRouter.put('/:id/change-password', async (request, response) => {
 
   const decodedToken = decode.decodeToken(request)
 
-  const iUser = await IndividualUser.findById(decodedToken)
+  const iUser = await IndividualUser.findById(decodedToken.id)
   const i = await IndividualUser.findById(request.params.id)
   if (!iUser) {
     return response.status(401).json({
