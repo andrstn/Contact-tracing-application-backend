@@ -168,7 +168,7 @@ usersEstablishmentRouter.put('/:id/change-password', async (request, response) =
 
   const eUser = await EstablishmentUser.findById(decodedToken.id)
   const e = await EstablishmentUser.findById(request.params.id)
-  if (!estab) {
+  if (!eUser) {
     return response.status(401).json({
       error: 'Unauthorized user.'
     })
