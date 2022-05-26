@@ -9,31 +9,6 @@ const TransactionLevelThree = require('../../models/Transactions/transaction-lev
 const decode = require('../../utils/decodeToken')
 const handler = require('express').Router()
 
-
-// Get Transactions each level
-handler.get('/transaction-one', async (request, response) => {
-    const handler = await TransactionLevelOne
-    .find({})
-    .populate('person',{ firstName: 1, lastName: 1}, Individual) 
-    .populate('establishment',{ name: 1, level: 1}, Establishment) 
-    response.json(handler)
-  })
-
-handler.get('/transaction-two', async (request, response) => {
-    const handler = await TransactionLevelTwo
-    .find({})
-    response.json(handler)
-  })
-
-handler.get('/transaction-three', async (request, response) => {
-    const handler = await TransactionLevelThree
-    .find({})
-    .populate('person', 'firstName', Individual) 
-    response.json(handler)
-  })
-
-
-
 handler.post('/', async (request, response) => {
     const decodedToken = decode.decodeToken(request)
 
@@ -60,7 +35,8 @@ handler.post('/', async (request, response) => {
         return response.status(401).json({
             message: 'Invalid establishment ID.'
         })
-    } else if (establishment.accountId.toString() !== establishmentUser.id) {
+    }
+    if (establishment.accountId.toString() !== establishmentUser.id) {
         return response.status(401).json({
             message: 'Unauthorized establishment user.'
         })
@@ -185,7 +161,7 @@ handler.post('/', async (request, response) => {
         // Add transaction to establishment pending logs
         try {
             const currentPending = establishment.pending
-            const newPending = currentPending.push(savedTransaction.id)
+            currentPending.push(savedTransaction.id)
             const updatePending = {
                 pending: currentPending
             }
@@ -230,9 +206,11 @@ handler.post('/special/:id' ,async (request , response)=> {
     const teacher = await Individual.findById(request.params.id)
     if (!teacher) {
         return response.status(401).json({
-            message: 'Invalid person ID.'
+            message: 'Invalid teacher ID.'
         })
-    }else if(teacher){
+    }
+    
+    if(teacher){
         if(teacher.special === false){
             return response.status(401).json({
                 error: 'Unauthorized. Not a special user.'
@@ -254,47 +232,62 @@ handler.post('/special/:id' ,async (request , response)=> {
         })
         const savedTransaction = await newTransaction.save()
         
-    //Person update
-    try {
-        const newTransactionLevelThree = student.transactionLevelThree
-        const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
-        const newAttendance = {
-            transactionLevelThree: newTransactionLevelThree
+        //Person update 
+        try {
+            const newTransactionLevelThree = student.transactionLevelThree
+            const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
+            const newAttendance = {
+                transactionLevelThree: newTransactionLevelThree
+            }
+            await Individual.findByIdAndUpdate(personId , newAttendance, {new : true})
+        } catch (error) {
+            await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
+            return response.status(401).json({
+                message: 'Failed to save transaction one.'
+            })
         }
-        await Individual.findByIdAndUpdate(personId , newAttendance, {new : true})
-    } catch (error) {
-        await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
-        return response.status(401).json({
-            message: 'Failed to save transaction one.'
-        })
-    }
 
-    //Establishment update
-    try {
-        const newTransactionLevelThree = school.transactionLevelThree
-        const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
-        const newAttendance = {
-            transactionLevelThree: newTransactionLevelThree
-        }
-        await Establishment.findByIdAndUpdate(establishmentId , newAttendance, {new : true})
-    } catch (error) {
+        //Establishment update
+        try {
+            const newTransactionLevelThree = school.transactionLevelThree
+            const addTransaction = newTransactionLevelThree.push(savedTransaction.id)
+            const newAttendance = {
+                transactionLevelThree: newTransactionLevelThree
+            }
+            await Establishment.findByIdAndUpdate(establishmentId , newAttendance, {new : true})
+        } catch (error) {
 
-        await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
-        const currentStudent = await Individual.findById(personId)
-        const newTransactionLevelThree = currentStudent.transactionLevelThree
-        const removeTransaction = newTransactionLevelThree.filter(transaction => transaction.toString() !== savedTransaction.id)
-        const newTransactions = {
-            transactionLevelThree: removeTransaction
+            await TransactionLevelThree.findByIdAndDelete(savedTransaction.id)
+            const currentStudent = await Individual.findById(personId)
+            const newTransactionLevelThree = currentStudent.transactionLevelThree
+            const removeTransaction = newTransactionLevelThree.filter(transaction => transaction.toString() !== savedTransaction.id)
+            const newTransactions = {
+                transactionLevelThree: removeTransaction
+            }
+            await Individual.findByIdAndUpdate(personId , newTransactions, {new : true})
+            return response.status(401).json({
+                message: 'Failed to save transaction two.'
+            })
         }
-        await Individual.findByIdAndUpdate(personId , newTransactions, {new : true})
-        return response.status(401).json({
-            message: 'Failed to save transaction two.'
+
+        // Add transaction to establishment pending logs
+        try {
+            const currentPending = school.pending
+            currentPending.push(savedTransaction.id)
+            const updatePending = {
+                pending: currentPending
+            }
+            await Establishment.findByIdAndUpdate(establishmentId, updatePending, { new: true })
+        } catch (error) {
+            await TransactionLevelOne.findByIdAndDelete(savedTransaction.id)
+            return response.status(400).json({
+                message: 'Failed to save transaction.'
+            })
+        }
+        return response.status(201).json({
+            message: 'Transaction saved',
+            data: savedTransaction
         })
-    }
-    return response.status(201).json({
-        message: 'Transaction saved',
-        data: savedTransaction
-    })
     } catch (error) {
         return response.status(401).json({
             message: 'Failed to save transaction three.'
