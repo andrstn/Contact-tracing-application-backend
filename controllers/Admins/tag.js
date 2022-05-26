@@ -68,9 +68,10 @@ handler.put('/:id', async (request, response) => {
     const entrance = async (login) => {
         for (let iLogin = 0; iLogin < login.length; iLogin++) {
             const person = await Individual.findById(login[iLogin].person)
-            if (person.status !== 'positive') {
+            if (person.status !== 'positive' && person.status !== 'high') {
                 const update = {
-                    status: 'high'
+                    status: 'high',
+                    lastModified: Math.round((new Date()).getTime() / 1000)
                 }
                 await Individual.findByIdAndUpdate(person.id, update, { new: true })
             }
@@ -81,9 +82,10 @@ handler.put('/:id', async (request, response) => {
         for (let iLogout = 0; iLogout < logout.length; iLogout++) {
             const person = await Individual.findById(logout[iLogout].person)
             const update = {
-                status: 'high'
+                status: 'high',
+                lastModified: Math.round((new Date()).getTime() / 1000)
             }
-            if (person.status !== 'positive') {
+            if (person.status !== 'positive' && person.status !== 'high') {
                 await Individual.findByIdAndUpdate(person.id, update, { new: true })
             }             
         }
@@ -114,7 +116,8 @@ handler.put('/:id', async (request, response) => {
             for (let iInner = 0; iInner < inner.length; iInner++) {
                 const person = await Individual.findById(inner[iInner].person)
                 const update = {
-                    status: 'low'
+                    status: 'low',
+                    lastModified: Math.round((new Date()).getTime() / 1000)
                 }                
                 if (person.status === 'negative') {
                     await Individual.findByIdAndUpdate(person.id, update, { new: true })
@@ -148,7 +151,8 @@ handler.put('/:id', async (request, response) => {
             for (let iInner = 0; iInner < inner.length; iInner++) {
                 const person = await Individual.findById(inner[iInner].person)
                 const update = {
-                    status: 'mid'
+                    status: 'mid',
+                    lastModified: Math.round((new Date()).getTime() / 1000)
                 }
                 if (person.status === 'negative' || person.status === 'low') {
                     await Individual.findByIdAndUpdate(person.id, update, { new: true })
@@ -182,9 +186,10 @@ handler.put('/:id', async (request, response) => {
             for (let iInner = 0; iInner < inner.length; iInner++) {
                 const person = await Individual.findById(inner[iInner].person)
                 const update = {
-                    status: 'high'
+                    status: 'high',
+                    lastModified: Math.round((new Date()).getTime() / 1000)
                 }
-                if (person.status !== 'positive' || person.status !== 'high') {
+                if (person.status !== 'positive' && person.status !== 'high') {
                     await Individual.findByIdAndUpdate(person.id, update, { new: true })
                 }
             }

@@ -76,6 +76,9 @@ const individualSchema = new mongoose.Schema({
     type: Boolean,
     required: true
   },
+  lastModified: {
+    type: Number
+  },
   transactionLevelOne: [
     {
       type: mongoose.Schema.Types.ObjectId,
