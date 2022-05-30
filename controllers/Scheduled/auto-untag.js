@@ -1,14 +1,12 @@
 const schedule = require('node-schedule');
 const Individual = require('../../models/Individuals/individual')
+const logger = require('../../utils/logger')
 
-
-schedule.scheduleJob('checkStatusUpdate','0 0 * * *', async (request, response) =>{
-    const body = request.body
+schedule.scheduleJob('untag','0 0 * * *', async (request, response) =>{
     const seconds = (Math.round((new Date()).getTime() / 1000)) - 1296000
 
-
     const i = await Individual.find({})
-    .where(lastModified).lt(seconds)
+    .where('lastModified').lt(seconds)
 
     for (let index = 0; index < i.length; index++) {
         if(i[index].status === 'low' || 'mid' || 'high'){
@@ -16,12 +14,10 @@ schedule.scheduleJob('checkStatusUpdate','0 0 * * *', async (request, response) 
                 status: 'negative'
             }
             try {
-                const updatedProfile = await Individual.findByIdAndUpdate(request.params.id, person, { new: true })
-                  response.status(201).json(updatedProfile)
+                const updatedProfile = await Individual.findByIdAndUpdate(i[index].id, person, { new: true })
+                console.log(updatedProfile);
             } catch (error) {
-                return response.status(401).json({
-                     error: 'Failed to update status.'
-                })
+                logger.error('Failed to auto-untag.')
             }
         } 
     }
