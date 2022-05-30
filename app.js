@@ -9,6 +9,9 @@ const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 const sms = require('./utils/sms')
+const autoUntag = require('./controllers/Scheduled/auto-untag')
+const transactionDelete = require('./controllers/Scheduled/transaction-delete')
+const floatingTransaction = require('./controllers/Scheduled/logout')
 
 // const GridFs = require('./utils/gridFs')
 // const {GridFsStorage} = require('multer-gridfs-storage')
@@ -38,16 +41,6 @@ const untagRouter = require('./controllers/Admins/untag')
 morgan.token('body', (request, response) => {
     return JSON.stringify(request.body) 
 })  
-
-
-
-
-// const connect = mongoose.connect(process.env.MONGODB_UPLOAD_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// // connect to the database  
-// connect.then(() => {
-//   console.log('Connected to database: GridApp');
-// }, (err) => console.log(err));
 
 app.use(express.json())
 app.use(cors())
