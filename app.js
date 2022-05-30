@@ -42,15 +42,6 @@ morgan.token('body', (request, response) => {
     return JSON.stringify(request.body) 
 })  
 
-
-
-// const connect = mongoose.connect(process.env.MONGODB_UPLOAD_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-// // connect to the database  
-// connect.then(() => {
-//   console.log('Connected to database: GridApp');
-// }, (err) => console.log(err));
-
 app.use(express.json())
 app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))

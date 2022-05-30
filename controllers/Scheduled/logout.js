@@ -6,7 +6,7 @@ const TransactionLevelTwo = require('../../models/Transactions/transaction-level
 const TransactionLevelThree = require('../../models/Transactions/transaction-level-3');
 const logger = require('../../utils/logger')
 
-schedule.scheduleJob('untag','*/10 * * * * *', async (request, response) =>{
+schedule.scheduleJob('untag','0 0 * * *', async (request, response) =>{
     const seconds = (Math.round((new Date()).getTime() / 1000)) - 1296000
     
     const establishmentsOne = await Establishment.find({level: 1})
